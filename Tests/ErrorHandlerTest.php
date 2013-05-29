@@ -503,6 +503,23 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 		$this->assertNotEmpty($this->log_results);
 	}
 
+	public function testFormatException()
+	{
+		$message_formatter = $this->messageFormatter();
+		$exception = new \Exception('Now you die!');
+		$this->error->setMessageFormatter($message_formatter);
+		$this->assertEquals(
+			$this->error->formatException($exception),
+			$message_formatter(
+				$this->error->buildExceptionHeader($exception),
+				$exception->getMessage(),
+				$exception->getFile(),
+				$exception->getLine(),
+				$this->error->formatTrace($exception->getTrace())
+			)
+		);
+	}
+
 	private function traceFormatter()
 	{
 		return function ($trace) {
