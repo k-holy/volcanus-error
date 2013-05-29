@@ -310,13 +310,7 @@ class ErrorHandler
 	 */
 	public function handleException(\Exception $exception)
 	{
-		$this->handle($this->formatMessage(
-			$this->buildExceptionHeader($exception),
-			$exception->getMessage(),
-			$exception->getFile(),
-			$exception->getLine(),
-			$this->formatTrace($exception->getTrace())
-		), self::LEVEL_EXCEPTION, $exception);
+		$this->handle($this->formatException($exception), self::LEVEL_EXCEPTION, $exception);
 	}
 
 	/**
@@ -347,6 +341,23 @@ class ErrorHandler
 			$this->formatTrace($trace)
 		), $this->convertErrorLevel($errno));
 		return true;
+	}
+
+	/**
+	 * 例外を発生元およびスタックトレースが付与されたメッセージに加工して返します。
+	 *
+	 * @param Exception
+	 * @return string 例外メッセージ
+	 */
+	public function formatException(\Exception $exception)
+	{
+		return $this->formatMessage(
+			$this->buildExceptionHeader($exception),
+			$exception->getMessage(),
+			$exception->getFile(),
+			$exception->getLine(),
+			$this->formatTrace($exception->getTrace())
+		);
 	}
 
 	/**
