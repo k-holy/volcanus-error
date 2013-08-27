@@ -36,7 +36,7 @@ class ExceptionFormatter implements ExceptionFormatterInterface
 	public function format(\Exception $e)
 	{
 		return sprintf("%s '%s' in %s on line %u",
-			$this->buildHeader($errno),
+			$this->buildHeader($e),
 			$e->getMessage(),
 			$e->getFile(),
 			$e->getLine()
