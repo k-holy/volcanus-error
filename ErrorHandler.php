@@ -1,17 +1,17 @@
 <?php
 /**
- * PHP versions 5
+ * Volcanus libraries for PHP
  *
- * @copyright  2012 k-holy <k.holy74@gmail.com>
- * @author     k.holy74@gmail.com
- * @license    http://www.opensource.org/licenses/mit-license.php  The MIT License (MIT)
+ * @copyright 2011-2013 k-holy <k.holy74@gmail.com>
+ * @license The MIT License (MIT)
  */
+
 namespace Volcanus\Error;
 
 /**
  * ErrorHandler
  *
- * @author     k.holy74@gmail.com
+ * @author k.holy74@gmail.com
  */
 class ErrorHandler
 {
@@ -48,25 +48,17 @@ class ErrorHandler
 		'display_buffering' => true,
 	);
 
-	/* @var array PHPエラーレベル */
-	private $errorLabels = array(
-		E_ERROR             => 'Fatal error',
-		E_WARNING           => 'Warning',
-		E_NOTICE            => 'Notice',
-		E_STRICT            => 'Strict standards',
-		E_RECOVERABLE_ERROR => 'Catchable fatal error',
-		E_DEPRECATED        => 'Depricated',
-		E_USER_ERROR        => 'User Fatal error',
-		E_USER_WARNING      => 'User Warning',
-		E_USER_NOTICE       => 'User Notice',
-		E_USER_DEPRECATED   => 'User Depricated',
-	);
-
 	/* @var callable エラーメッセージフォーマット関数 */
 	private $messageFormatter;
 
 	/* @var callable スタックトレースフォーマット関数 */
 	private $traceFormatter;
+
+	/* @var callable エラーフォーマット関数 */
+	private $errorFormatter;
+
+	/* @var callable 例外フォーマット関数 */
+	private $exceptionFormatter;
 
 	/* @var callable ログ関数 */
 	private $logger;
@@ -131,6 +123,8 @@ class ErrorHandler
 			return sprintf("%s '%s' in %s on line %d%s", $header, $message, $file, $line, $trace);
 		};
 		$this->traceFormatter = new TraceFormatter();
+		$this->errorFormatter = new ErrorFormatter();
+		$this->exceptionFormatter = new ExceptionFormatter();
 		$this->logger = null;
 		$this->display = null;
 		$this->forward = null;
@@ -199,6 +193,44 @@ class ErrorHandler
 	}
 
 	/**
+	 * PHPエラーのフォーマット関数をセットします。
+	 *
+	 * @param callable PHPエラーのフォーマット関数
+	 * @return $this
+	 */
+	public function setErrorFormatter($exceptionFormatter)
+	{
+		if (!is_callable($errorFormatter)) {
+			throw new \InvalidArgumentException(
+				sprintf('The errorFormatter is not callable. type:%s',
+					is_object($errorFormatter) ? get_class($errorFormatter) : gettype($errorFormatter)
+				)
+			);
+		}
+		$this->errorFormatter = $errorFormatter;
+		return $this;
+	}
+
+	/**
+	 * 例外のフォーマット関数をセットします。
+	 *
+	 * @param callable 例外のフォーマット関数
+	 * @return $this
+	 */
+	public function setExceptionFormatter($errorFormatter)
+	{
+		if (!is_callable($exceptionFormatter)) {
+			throw new \InvalidArgumentException(
+				sprintf('The exceptionFormatter is not callable. type:%s',
+					is_object($exceptionFormatter) ? get_class($exceptionFormatter) : gettype($exceptionFormatter)
+				)
+			);
+		}
+		$this->exceptionFormatter = $exceptionFormatter;
+		return $this;
+	}
+
+	/**
 	 * エラーメッセージのフォーマット関数をセットします。
 	 *
 	 * @param callable エラーメッセージのフォーマット関数
@@ -209,7 +241,9 @@ class ErrorHandler
 		if (!is_callable($messageFormatter)) {
 			throw new \InvalidArgumentException(
 				sprintf('The messageFormatter is not callable. type:%s',
-				(is_object($messageFormatter)) ? get_class($messageFormatter) : gettype($messageFormatter)));
+					is_object($messageFormatter) ? get_class($messageFormatter) : gettype($messageFormatter)
+				)
+			);
 		}
 		$this->messageFormatter = $messageFormatter;
 		return $this;
@@ -310,7 +344,28 @@ class ErrorHandler
 	 */
 	public function handleException(\Exception $exception)
 	{
-		$this->handle($this->formatException($exception), self::LEVEL_EXCEPTION, $exception);
+		$this->handle(
+			$this->formatException($exception),
+			self::LEVEL_EXCEPTION,
+			$exception
+		);
+	}
+
+	/**
+	 * 例外を発生元およびスタックトレースが付与されたメッセージに加工して返します。
+	 *
+	 * @param Exception
+	 * @return string 例外メッセージ
+	 */
+	public function formatException(\Exception $exception)
+	{
+		return $this->formatMessage(
+			$this->buildExceptionHeader($exception),
+			$exception->getMessage(),
+			$exception->getFile(),
+			$exception->getLine(),
+			$this->formatTrace($exception->getTrace())
+		);
 	}
 
 	/**
@@ -333,30 +388,31 @@ class ErrorHandler
 		} else {
 			$trace = array();
 		}
-		$this->handle($this->formatMessage(
+		$this->handle(
+			$this->formatError($errno, $errstr, $errfile, $errline, $trace),
+			$this->convertErrorLevel($errno)
+		);
+		return true;
+	}
+
+	/**
+	 * PHPエラーを発生元およびスタックトレースが付与されたメッセージに加工して返します。
+	 *
+	 * @param int エラーレベル
+	 * @param string エラーメッセージ
+	 * @param string エラー発生元ファイル
+	 * @param string エラー発生元ファイルの行番号
+	 * @param array スタックトレース
+	 * @return string メッセージ
+	 */
+	public function formatError($errno, $errstr, $errfile, $errline, $trace)
+	{
+		return $this->formatMessage(
 			$this->buildErrorHeader($errno),
 			$errstr,
 			$errfile,
 			$errline,
 			$this->formatTrace($trace)
-		), $this->convertErrorLevel($errno));
-		return true;
-	}
-
-	/**
-	 * 例外を発生元およびスタックトレースが付与されたメッセージに加工して返します。
-	 *
-	 * @param Exception
-	 * @return string 例外メッセージ
-	 */
-	public function formatException(\Exception $exception)
-	{
-		return $this->formatMessage(
-			$this->buildExceptionHeader($exception),
-			$exception->getMessage(),
-			$exception->getFile(),
-			$exception->getLine(),
-			$this->formatTrace($exception->getTrace())
 		);
 	}
 
@@ -454,7 +510,7 @@ class ErrorHandler
 	 */
 	public function buildExceptionHeader(\Exception $exception)
 	{
-		return sprintf("Uncaught Exception %s[%d]:", get_class($exception), $exception->getCode());
+		return $this->exceptionFormatter->buildHeader($exception);
 	}
 
 	/**
@@ -463,13 +519,9 @@ class ErrorHandler
 	 * @param int PHPエラーレベル
 	 * @return string
 	 */
-	public function buildErrorHeader($error)
+	public function buildErrorHeader($errno)
 	{
-		return sprintf('%s[%d]:', (isset($this->errorLabels[$error]))
-			? $this->errorLabels[$error]
-			: 'Unknown error',
-			$error
-		);
+		return $this->errorFormatter->buildHeader($errno);
 	}
 
 	/**
@@ -482,7 +534,7 @@ class ErrorHandler
 	 * @param string スタックトレース
 	 * @return string
 	 */
-	public function formatMessage($header, $message, $file, $line, $trace)
+	private function formatMessage($header, $message, $file, $line, $trace)
 	{
 		$messageFormatter = $this->messageFormatter;
 		return $messageFormatter($header, $message, $file, $line, $trace);
@@ -494,7 +546,7 @@ class ErrorHandler
 	 * @param array stackTrace
 	 * @return string
 	 */
-	public function formatTrace(array $trace)
+	private function formatTrace(array $trace)
 	{
 		$formatter = $this->traceFormatter;
 		return $formatter($trace);

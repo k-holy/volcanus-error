@@ -343,32 +343,6 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 			$this->error->buildExceptionHeader($exception));
 	}
 
-	public function testFormatTrace()
-	{
-		$trace_formatter = $this->traceFormatter();
-		$this->error->setTraceFormatter($trace_formatter);
-		$trace = debug_backtrace();
-		$this->assertEquals(
-			$this->error->formatTrace($trace),
-			$trace_formatter($trace)
-		);
-	}
-
-	public function testFormatMessage()
-	{
-		$message_formatter = $this->messageFormatter();
-		$this->error->setMessageFormatter($message_formatter);
-		$header  = 'Error';
-		$message = 'Test!';
-		$file = __FILE__;
-		$line = __LINE__;
-		$trace = 'No StackTarce...';
-		$this->assertEquals(
-			$this->error->formatMessage($header, $message, $file, $line, $trace),
-			$message_formatter($header, $message, $file, $line, $trace)
-		);
-	}
-
 	public function testGetErrorHandler()
 	{
 		$this->assertTrue(is_callable($this->error->getErrorHandler()));
@@ -506,8 +480,10 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 	public function testFormatException()
 	{
 		$message_formatter = $this->messageFormatter();
-		$exception = new \Exception('Now you die!');
+		$trace_formatter = $this->traceFormatter();
 		$this->error->setMessageFormatter($message_formatter);
+		$this->error->setTraceFormatter($trace_formatter);
+		$exception = new \Exception('Now you die!');
 		$this->assertEquals(
 			$this->error->formatException($exception),
 			$message_formatter(
@@ -515,7 +491,36 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 				$exception->getMessage(),
 				$exception->getFile(),
 				$exception->getLine(),
-				$this->error->formatTrace($exception->getTrace())
+				$trace_formatter($exception->getTrace())
+			)
+		);
+	}
+
+	public function testFormatError()
+	{
+		$message_formatter = $this->messageFormatter();
+		$trace_formatter = $this->traceFormatter();
+		$this->error->setMessageFormatter($message_formatter);
+		$this->error->setTraceFormatter($trace_formatter);
+		$errno   = E_USER_WARNING;
+		$errstr  = 'ERR';
+		$errfile = __FILE__;
+		$errline = __LINE__;
+		$trace   = debug_backtrace();
+		$this->assertEquals(
+			$this->error->formatError(
+				$errno,
+				$errstr,
+				$errfile,
+				$errline,
+				$trace
+			),
+			$message_formatter(
+				$this->error->buildErrorHeader($errno),
+				$errstr,
+				$errfile,
+				$errline,
+				$trace_formatter($trace)
 			)
 		);
 	}
@@ -537,6 +542,20 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 			return (count($formatted_trace) >= 1)
 				? sprintf("\nStack trace:\n%s", implode("\n", $formatted_trace))
 				: '';
+		};
+	}
+
+	private function errorFormatter()
+	{
+		return function ($errno, $errstr, $errfile, $errline) {
+			return sprintf('[%d] %s in %s on line %d', $errno, $errstr, $errfile, $errline);
+		};
+	}
+
+	private function exceptionFormatter()
+	{
+		return function (\Exception $e) {
+			return sprintf('[%d] %s in %s on line %d', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
 		};
 	}
 
