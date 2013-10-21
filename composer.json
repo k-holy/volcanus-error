@@ -3,8 +3,8 @@
     "type": "library",
     "description": "simple error and exception handler",
     "keywords": [],
-    "homepage": "https://github.com/k-holy/Volcanus_Error",
-    "version": "0.3.1",
+    "homepage": "https://github.com/k-holy/volcanus-error",
+    "version": "0.3.2",
     "license": "MIT",
     "authors": [
         {
