@@ -1,6 +1,9 @@
 Volcanus\Error\ErrorHandler
 ===============
 
+[![Latest Stable Version](https://poser.pugx.org/volcanus/error/v/stable.png)](https://packagist.org/packages/volcanus/error)
+[![Build Status](https://travis-ci.org/k-holy/volcanus-error.png?branch=master)](https://travis-ci.org/k-holy/volcanus-error)
+
 エラーおよび例外処理用クラスです。
 以下の機能をサポートしています。
 
