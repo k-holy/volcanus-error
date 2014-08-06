@@ -12,9 +12,8 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Volcanus\\Error": "." }
+        "psr-0": { "Volcanus\\Error": "src/" }
     },
-    "target-dir": "Volcanus/Error",
     "require": {
         "php": ">=5.3.3"
     },

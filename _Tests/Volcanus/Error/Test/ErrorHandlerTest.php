@@ -6,7 +6,7 @@
  * @author     k.holy74@gmail.com
  * @license    http://www.opensource.org/licenses/mit-license.php  The MIT License (MIT)
  */
-namespace Volcanus\Error\Tests;
+namespace Volcanus\Error\Test;
 
 use Volcanus\Error\ErrorHandler;
 
