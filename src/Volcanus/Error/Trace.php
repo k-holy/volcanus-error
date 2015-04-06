@@ -85,7 +85,7 @@ class Trace implements \ArrayAccess
 	 *
 	 * @return string
 	 */
-	public function formatArguments()
+	public function formatArgument()
 	{
 		return $this->formatter->formatArguments(
 			isset($this->trace['args']) ? $this->trace['args'] : null
@@ -102,7 +102,7 @@ class Trace implements \ArrayAccess
 		return array(
 			'location' => $this->formatLocation(),
 			'function' => $this->formatFunction(),
-			'arguments' => $this->formatArguments(),
+			'argument' => $this->formatArgument(),
 		);
 	}
 
