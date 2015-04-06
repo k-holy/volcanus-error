@@ -2,11 +2,14 @@
 /**
  * Volcanus libraries for PHP
  *
- * @copyright 2011-2013 k-holy <k.holy74@gmail.com>
+ * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
  */
 
 namespace Volcanus\Error;
+
+use Volcanus\Error\TraceFormatterInterface;
+use Volcanus\Error\Trace;
 
 /**
  * スタックトレースイテレータ
@@ -71,22 +74,7 @@ class StackTraceIterator implements \Iterator, \Countable
 	 */
 	public function current()
 	{
-		$trace = $this->stackTrace[$this->position];
-		return array(
-			'index' => $this->position,
-			'location' => $this->formatter->formatLocation(
-				isset($trace['file']) ? $trace['file'] : null,
-				isset($trace['line']) ? $trace['line'] : null
-			),
-			'function' => $this->formatter->formatFunction(
-				isset($trace['class']) ? $trace['class'] : null,
-				isset($trace['type']) ? $trace['type'] : null,
-				isset($trace['function']) ? $trace['function'] : null
-			),
-			'argument' => $this->formatter->formatArguments(
-				isset($trace['args']) ? $trace['args'] : null
-			),
-		);
+		return new Trace($this->formatter, $this->stackTrace[$this->position]);
 	}
 
 	/**
