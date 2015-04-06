@@ -120,7 +120,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 		$this->assertEquals('FUNCTION', $trace['function']);
 	}
 
-	public function testFormatArguments()
+	public function testFormatArgument()
 	{
 		$source = $this->getSource();
 
@@ -130,35 +130,35 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 			->with($this->equalTo($source['args']));
 
 		$trace = new Trace($formatter, $source);
-		$trace->formatArguments();
+		$trace->formatArgument();
 	}
 
-	public function testGetArgumentsByPropertyAccess()
+	public function testGetArgumentByPropertyAccess()
 	{
 		$source = $this->getSource();
 
 		$formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 		$formatter->expects($this->once())
 			->method('formatArguments')
-			->will($this->returnValue('ARGUMENTS'));
+			->will($this->returnValue('ARGUMENT'));
 
 		$trace = new Trace($formatter, $source);
 
-		$this->assertEquals('ARGUMENTS', $trace->arguments);
+		$this->assertEquals('ARGUMENT', $trace->argument);
 	}
 
-	public function testGetArgumentsByArrayAccess()
+	public function testGetArgumentByArrayAccess()
 	{
 		$source = $this->getSource();
 
 		$formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 		$formatter->expects($this->once())
 			->method('formatArguments')
-			->will($this->returnValue('ARGUMENTS'));
+			->will($this->returnValue('ARGUMENT'));
 
 		$trace = new Trace($formatter, $source);
 
-		$this->assertEquals('ARGUMENTS', $trace['arguments']);
+		$this->assertEquals('ARGUMENT', $trace['argument']);
 	}
 
 	public function testToArray()
@@ -176,7 +176,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 
 		$formatter->expects($this->once())
 			->method('formatArguments')
-			->will($this->returnValue('ARGUMENTS'));
+			->will($this->returnValue('ARGUMENT'));
 
 		$trace = new Trace($formatter, $source);
 		$array = $trace->toArray();
@@ -187,8 +187,8 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 		$this->assertArrayHasKey('function', $array);
 		$this->assertEquals('FUNCTION', $array['function']);
 
-		$this->assertArrayHasKey('arguments', $array);
-		$this->assertEquals('ARGUMENTS', $array['arguments']);
+		$this->assertArrayHasKey('argument', $array);
+		$this->assertEquals('ARGUMENT', $array['argument']);
 
 	}
 
@@ -216,7 +216,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertTrue(isset($trace->location));
 		$this->assertTrue(isset($trace->function));
-		$this->assertTrue(isset($trace->arguments));
+		$this->assertTrue(isset($trace->argument));
 	}
 
 	public function testIsSetByArrayAccess()
@@ -229,7 +229,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 
 		$this->assertTrue(isset($trace['location']));
 		$this->assertTrue(isset($trace['function']));
-		$this->assertTrue(isset($trace['arguments']));
+		$this->assertTrue(isset($trace['argument']));
 	}
 
 	/**
@@ -331,7 +331,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 
 		$formatter->expects($this->any())
 			->method('formatArguments')
-			->will($this->returnValue('ARGUMENTS'));
+			->will($this->returnValue('ARGUMENT'));
 
 		$trace = new Trace($formatter, $source);
 		$cloned = clone $trace;
@@ -339,7 +339,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 		$this->assertNotSame($trace, $cloned);
 		$this->assertEquals($trace->location, $cloned->location);
 		$this->assertEquals($trace->function, $cloned->function);
-		$this->assertEquals($trace->arguments, $cloned->arguments);
+		$this->assertEquals($trace->argument, $cloned->argument);
 	}
 
 	public function testSerialize()
@@ -357,7 +357,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 
 		$formatter->expects($this->once())
 			->method('formatArguments')
-			->will($this->returnValue('ARGUMENTS'));
+			->will($this->returnValue('ARGUMENT'));
 
 		$trace = new Trace($formatter, $source);
 		$deserialized = unserialize(serialize($trace));
@@ -366,7 +366,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
 		$this->assertNotSame($trace, $deserialized);
 		$this->assertEquals($trace->location, $deserialized->location);
 		$this->assertEquals($trace->function, $deserialized->function);
-		$this->assertEquals($trace->arguments, $deserialized->arguments);
+		$this->assertEquals($trace->argument, $deserialized->argument);
 	}
 
 }
