@@ -3,7 +3,7 @@
     "homepage": "https://github.com/k-holy/volcanus-error",
     "type": "library",
     "description": "simple error and exception handler",
-    "version": "0.3.5",
+    "version": "0.4.0",
     "license": "MIT",
     "authors": [
         {
@@ -12,7 +12,7 @@
         }
     ],
     "autoload": {
-        "psr-0": { "Volcanus\\Error": "src/" }
+        "psr-4": { "Volcanus\\Error\\": "src/" }
     },
     "require": {
         "php": ">=5.3.3"
