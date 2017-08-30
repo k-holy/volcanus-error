@@ -16,28 +16,28 @@ namespace Volcanus\Error;
 interface ExceptionFormatterInterface
 {
 
-	/**
-	 * 例外オブジェクトを文字列に整形して返します。
-	 *
-	 * @param \Exception 例外オブジェクト
-	 * @return string
-	 */
-	public function __invoke(\Exception $e);
+    /**
+     * 例外オブジェクトを文字列に整形して返します。
+     *
+     * @param \Exception|\Throwable $e 例外オブジェクト
+     * @return string
+     */
+    public function __invoke($e);
 
-	/**
-	 * 例外オブジェクトを文字列に整形して返します。
-	 *
-	 * @param \Exception 例外オブジェクト
-	 * @return string
-	 */
-	public function format(\Exception $e);
+    /**
+     * 例外オブジェクトを文字列に整形して返します。
+     *
+     * @param \Exception|\Throwable $e 例外オブジェクト
+     * @return string
+     */
+    public function format($e);
 
-	/**
-	 * 例外からエラーメッセージ用のヘッダを生成して返します。
-	 *
-	 * @param \Exception 例外オブジェクト
-	 * @return string
-	 */
-	public function buildHeader(\Exception $e);
+    /**
+     * 例外からエラーメッセージ用のヘッダを生成して返します。
+     *
+     * @param \Exception|\Throwable $e 例外オブジェクト
+     * @return string
+     */
+    public function buildHeader($e);
 
 }
