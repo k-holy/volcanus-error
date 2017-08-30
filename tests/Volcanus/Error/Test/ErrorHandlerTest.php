@@ -15,7 +15,7 @@ use Volcanus\Error\ErrorHandler;
  *
  * @author k.holy74@gmail.com
  */
-class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
+class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
 {
 
     /** @var \Volcanus\Error\ErrorHandler */
