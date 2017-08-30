@@ -19,25 +19,25 @@ interface ExceptionFormatterInterface
     /**
      * 例外オブジェクトを文字列に整形して返します。
      *
-     * @param \Exception 例外オブジェクト
+     * @param \Exception|\Throwable $e 例外オブジェクト
      * @return string
      */
-    public function __invoke(\Exception $e);
+    public function __invoke($e);
 
     /**
      * 例外オブジェクトを文字列に整形して返します。
      *
-     * @param \Exception 例外オブジェクト
+     * @param \Exception|\Throwable $e 例外オブジェクト
      * @return string
      */
-    public function format(\Exception $e);
+    public function format($e);
 
     /**
      * 例外からエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param \Exception 例外オブジェクト
+     * @param \Exception|\Throwable $e 例外オブジェクト
      * @return string
      */
-    public function buildHeader(\Exception $e);
+    public function buildHeader($e);
 
 }

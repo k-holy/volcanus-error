@@ -8,10 +8,12 @@
 
 namespace Volcanus\Error;
 
-use Volcanus\Error\TraceFormatterInterface;
-
 /**
  * トレース
+ *
+ * @property $location
+ * @property $function
+ * @property $argument
  *
  * @author k.holy74@gmail.com
  */
@@ -19,7 +21,7 @@ class Trace implements \ArrayAccess
 {
 
     /**
-     * @var TraceFormatterInterface トレースフォーマッタ
+     * @var \Volcanus\Error\TraceFormatterInterface トレースフォーマッタ
      */
     private $formatter;
 
@@ -31,10 +33,10 @@ class Trace implements \ArrayAccess
     /**
      * コンストラクタ
      *
-     * @param TraceFormatterInterface トレースフォーマッタ
-     * @param array トレース情報の連想配列
+     * @param \Volcanus\Error\TraceFormatterInterface $formatter トレースフォーマッタ
+     * @param array $trace トレース情報の連想配列
      */
-    public function __construct(TraceFormatterInterface $formatter, array $trace)
+    public function __construct(\Volcanus\Error\TraceFormatterInterface $formatter, array $trace)
     {
         $this->formatter = $formatter;
         $this->initialize($trace);
@@ -43,8 +45,7 @@ class Trace implements \ArrayAccess
     /**
      * オブジェクトを初期化します。
      *
-     * @param array トレース情報の連想配列
-     * @param int インデックス
+     * @param array $trace トレース情報の連想配列
      * @return $this
      */
     public function initialize(array $trace = null)
@@ -95,7 +96,7 @@ class Trace implements \ArrayAccess
     /**
      * 配列に整形して返します。
      *
-     * @return string
+     * @return array
      */
     public function toArray()
     {
@@ -119,7 +120,7 @@ class Trace implements \ArrayAccess
     /**
      * __isset
      *
-     * @param mixed
+     * @param mixed $name
      * @return bool
      */
     public function __isset($name)
@@ -130,7 +131,7 @@ class Trace implements \ArrayAccess
     /**
      * __get
      *
-     * @param mixed
+     * @param mixed $name
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -147,7 +148,7 @@ class Trace implements \ArrayAccess
     /**
      * ArrayAccess::offsetExists()
      *
-     * @param mixed
+     * @param mixed $name
      * @return bool
      */
     public function offsetExists($name)
@@ -158,7 +159,7 @@ class Trace implements \ArrayAccess
     /**
      * ArrayAccess::offsetGet()
      *
-     * @param mixed
+     * @param mixed $name
      * @return mixed
      * @throws \InvalidArgumentException
      */
@@ -188,8 +189,8 @@ class Trace implements \ArrayAccess
     /**
      * __set
      *
-     * @param mixed
-     * @param mixed
+     * @param mixed $name
+     * @param mixed $value
      * @throws \LogicException
      */
     final public function __set($name, $value)
@@ -202,7 +203,7 @@ class Trace implements \ArrayAccess
     /**
      * __unset
      *
-     * @param mixed
+     * @param mixed $name
      * @throws \LogicException
      */
     final public function __unset($name)
@@ -215,8 +216,8 @@ class Trace implements \ArrayAccess
     /**
      * ArrayAccess::offsetSet()
      *
-     * @param mixed
-     * @param mixed
+     * @param mixed $name
+     * @param mixed $value
      * @throws \LogicException
      */
     final public function offsetSet($name, $value)
@@ -229,7 +230,7 @@ class Trace implements \ArrayAccess
     /**
      * ArrayAccess::offsetUnset()
      *
-     * @param mixed
+     * @param mixed $name
      * @throws \LogicException
      */
     final public function offsetUnset($name)

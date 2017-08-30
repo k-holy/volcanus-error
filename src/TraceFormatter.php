@@ -19,7 +19,7 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * スタックトレースを文字列に整形して返します。
      *
-     * @param array スタックトレース
+     * @param array $stackTrace スタックトレース
      * @return string
      */
     public function __invoke(array $stackTrace)
@@ -30,7 +30,7 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * スタックトレースを文字列に整形して返します。
      *
-     * @param array スタックトレース
+     * @param array $stackTrace スタックトレース
      * @return string
      */
     public function arrayToString(array $stackTrace)
@@ -47,7 +47,7 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * 1レコード分のトレースを文字列に整形して返します。
      *
-     * @param array 1レコード分のトレース
+     * @param array $trace 1レコード分のトレース
      * @return string
      */
     public function format(array $trace)
@@ -71,8 +71,8 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * トレースのファイル情報を文字列に整形して返します。
      *
-     * @param string ファイルパス
-     * @param string 行番号
+     * @param string $file ファイルパス
+     * @param string $line 行番号
      * @return string
      */
     public function formatLocation($file, $line)
@@ -85,9 +85,9 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * トレースの関数呼び出し情報を文字列に整形して返します。
      *
-     * @param string クラス名
-     * @param string 呼び出し種別
-     * @param string 関数名/メソッド名
+     * @param string $class クラス名
+     * @param string $type 呼び出し種別
+     * @param string $function 関数名/メソッド名
      * @return string
      */
     public function formatFunction($class, $type, $function)
@@ -98,7 +98,7 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * トレースの関数呼び出しの引数を文字列に整形して返します。
      *
-     * @param array  引数の配列
+     * @param array $arguments 引数の配列
      * @return string
      */
     public function formatArguments($arguments)
@@ -125,7 +125,7 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * 変数の型の文字列表現を返します。
      *
-     * @param mixed
+     * @param mixed $var
      * @return string
      */
     public function formatVar($var)

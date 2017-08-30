@@ -8,9 +8,6 @@
 
 namespace Volcanus\Error\Test;
 
-use Volcanus\Error\Trace;
-use Volcanus\Error\TraceFormatter;
-
 /**
  * TraceTest
  *
@@ -35,6 +32,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatLocation')
@@ -43,7 +41,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo($source['line'])
             );
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
         $trace->formatLocation();
     }
 
@@ -51,12 +49,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatLocation')
             ->will($this->returnValue('LOCATION'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertEquals('LOCATION', $trace->location);
     }
@@ -65,12 +64,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatLocation')
             ->will($this->returnValue('LOCATION'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertEquals('LOCATION', $trace['location']);
     }
@@ -79,6 +79,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatFunction')
@@ -88,7 +89,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
                 $this->equalTo($source['function'])
             );
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
         $trace->formatFunction();
     }
 
@@ -96,12 +97,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatFunction')
             ->will($this->returnValue('FUNCTION'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertEquals('FUNCTION', $trace->function);
     }
@@ -110,12 +112,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatFunction')
             ->will($this->returnValue('FUNCTION'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertEquals('FUNCTION', $trace['function']);
     }
@@ -124,12 +127,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatArguments')
             ->with($this->equalTo($source['args']));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
         $trace->formatArgument();
     }
 
@@ -137,12 +141,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatArguments')
             ->will($this->returnValue('ARGUMENT'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertEquals('ARGUMENT', $trace->argument);
     }
@@ -151,12 +156,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatArguments')
             ->will($this->returnValue('ARGUMENT'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertEquals('ARGUMENT', $trace['argument']);
     }
@@ -165,6 +171,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatLocation')
@@ -178,7 +185,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
             ->method('formatArguments')
             ->will($this->returnValue('ARGUMENT'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
         $array = $trace->toArray();
 
         $this->assertArrayHasKey('location', $array);
@@ -196,12 +203,13 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('format')
             ->will($this->returnValue('formattedSource'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertEquals('formattedSource', $trace->__toString());
     }
@@ -210,9 +218,10 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertTrue(isset($trace->location));
         $this->assertTrue(isset($trace->function));
@@ -223,9 +232,10 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $this->assertTrue(isset($trace['location']));
         $this->assertTrue(isset($trace['function']));
@@ -239,10 +249,12 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $trace->unsupportedProperty;
     }
 
@@ -253,9 +265,10 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $trace['unsupportedProperty'];
     }
@@ -267,9 +280,10 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $trace->location = 'foo';
     }
@@ -281,9 +295,10 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         $trace['location'] = 'foo';
     }
@@ -295,9 +310,10 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         unset($trace->location);
     }
@@ -309,9 +325,10 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
 
         unset($trace['location']);
     }
@@ -320,6 +337,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->any())
             ->method('formatLocation')
@@ -333,7 +351,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
             ->method('formatArguments')
             ->will($this->returnValue('ARGUMENT'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
         $cloned = clone $trace;
         $this->assertEquals($trace, $cloned);
         $this->assertNotSame($trace, $cloned);
@@ -346,6 +364,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
     {
         $source = $this->getSource();
 
+        /** @var $formatter \Volcanus\Error\TraceFormatterInterface|\PHPUnit_Framework_MockObject_MockObject */
         $formatter = $this->getMock('\Volcanus\Error\TraceFormatterInterface');
         $formatter->expects($this->once())
             ->method('formatLocation')
@@ -359,7 +378,7 @@ class TraceTest extends \PHPUnit_Framework_TestCase
             ->method('formatArguments')
             ->will($this->returnValue('ARGUMENT'));
 
-        $trace = new Trace($formatter, $source);
+        $trace = new \Volcanus\Error\Trace($formatter, $source);
         $deserialized = unserialize(serialize($trace));
 
         $this->assertEquals($trace, $deserialized);
