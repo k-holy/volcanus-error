@@ -1,23 +1,25 @@
 {
-    "name": "volcanus/error",
-    "homepage": "https://github.com/k-holy/volcanus-error",
-    "type": "library",
-    "description": "simple error and exception handler",
-    "version": "0.4.1",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "k-holy",
-            "email": "k.holy74@gmail.com"
-        }
-    ],
-    "autoload": {
-        "psr-4": { "Volcanus\\Error\\": "src/" }
-    },
-    "require": {
-        "php": ">=5.3.9"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^4.8"
+  "name": "volcanus/error",
+  "homepage": "https://github.com/k-holy/volcanus-error",
+  "type": "library",
+  "description": "simple error and exception handler",
+  "version": "0.4.1",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "k-holy",
+      "email": "k.holy74@gmail.com"
     }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Volcanus\\Error\\": "src/"
+    }
+  },
+  "require": {
+    "php": ">=5.3.9"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^4.8"
+  }
 }
