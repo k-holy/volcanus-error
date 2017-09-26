@@ -18,8 +18,13 @@ use Volcanus\Error\ErrorHandler;
 class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 {
 
+    /** @var \Volcanus\Error\ErrorHandler */
     private $error;
+
+    /** @var array */
     private $log_results;
+
+    /** @var int */
     private $old_error_reporting;
 
     public function setUp()
@@ -414,7 +419,6 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testDisplayWithException()
     {
-        $log_results = array();
         $this->error->setDisplay(function ($message, $exception = null) {
             echo sprintf('%s: %s', $message,
                 (isset($exception) && ($exception instanceof ErrorHandlerTestException))
@@ -432,7 +436,6 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
 
     public function testForwardWithException()
     {
-        $log_results = array();
         $this->error->setForward(function ($message, $exception = null) {
             echo sprintf('%s: %s', $message,
                 (isset($exception) && ($exception instanceof ErrorHandlerTestException))
@@ -542,20 +545,6 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase
             return (count($formatted_trace) >= 1)
                 ? sprintf("\nStack trace:\n%s", implode("\n", $formatted_trace))
                 : '';
-        };
-    }
-
-    private function errorFormatter()
-    {
-        return function ($errno, $errstr, $errfile, $errline) {
-            return sprintf('[%d] %s in %s on line %d', $errno, $errstr, $errfile, $errline);
-        };
-    }
-
-    private function exceptionFormatter()
-    {
-        return function (\Exception $e) {
-            return sprintf('[%d] %s in %s on line %d', $e->getCode(), $e->getMessage(), $e->getFile(), $e->getLine());
         };
     }
 

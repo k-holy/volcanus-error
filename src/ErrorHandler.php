@@ -51,13 +51,13 @@ class ErrorHandler
     /* @var callable エラーメッセージフォーマット関数 */
     private $messageFormatter;
 
-    /* @var callable スタックトレースフォーマット関数 */
+    /* @var callable|\Volcanus\Error\TraceFormatterInterface スタックトレースフォーマット関数 */
     private $traceFormatter;
 
-    /* @var callable エラーフォーマット関数 */
+    /* @var callable|\Volcanus\Error\ErrorFormatterInterface エラーフォーマット関数 */
     private $errorFormatter;
 
-    /* @var callable 例外フォーマット関数 */
+    /* @var callable|\Volcanus\Error\ExceptionFormatterInterface 例外フォーマット関数 */
     private $exceptionFormatter;
 
     /* @var callable ログ関数 */
@@ -75,7 +75,7 @@ class ErrorHandler
     /**
      * コンストラクタ
      *
-     * @param array オプション設定
+     * @param array $options オプション設定
      */
     public function __construct(array $options = array())
     {
@@ -96,7 +96,7 @@ class ErrorHandler
     /**
      * インスタンスを生成して返します。
      *
-     * @param array オプション設定
+     * @param array $options オプション設定
      * @return $this
      */
     public static function instance(array $options = array())
@@ -107,7 +107,7 @@ class ErrorHandler
     /**
      * インスタンスを初期化して返します。
      *
-     * @param array オプション設定
+     * @param array $options オプション設定
      * @return $this
      */
     public function init(array $options = array())
@@ -140,7 +140,7 @@ class ErrorHandler
     /**
      * オプション項目の値を返します。
      *
-     * @param string オプション項目名
+     * @param string $name オプション項目名
      * @return mixed オプション項目値
      */
     public function getOption($name)
@@ -155,8 +155,8 @@ class ErrorHandler
     /**
      * オプション項目の値をセットします。
      *
-     * @param string オプション項目名
-     * @param mixed オプション項目値
+     * @param string $name オプション項目名
+     * @param mixed $value オプション項目値
      * @return $this
      */
     public function setOption($name, $value)
@@ -195,10 +195,10 @@ class ErrorHandler
     /**
      * PHPエラーのフォーマット関数をセットします。
      *
-     * @param callable PHPエラーのフォーマット関数
+     * @param callable $errorFormatter PHPエラーのフォーマット関数
      * @return $this
      */
-    public function setErrorFormatter($exceptionFormatter)
+    public function setErrorFormatter($errorFormatter)
     {
         if (!is_callable($errorFormatter)) {
             throw new \InvalidArgumentException(
@@ -214,10 +214,10 @@ class ErrorHandler
     /**
      * 例外のフォーマット関数をセットします。
      *
-     * @param callable 例外のフォーマット関数
+     * @param callable $exceptionFormatter 例外のフォーマット関数
      * @return $this
      */
-    public function setExceptionFormatter($errorFormatter)
+    public function setExceptionFormatter($exceptionFormatter)
     {
         if (!is_callable($exceptionFormatter)) {
             throw new \InvalidArgumentException(
@@ -233,7 +233,7 @@ class ErrorHandler
     /**
      * エラーメッセージのフォーマット関数をセットします。
      *
-     * @param callable エラーメッセージのフォーマット関数
+     * @param callable $messageFormatter エラーメッセージのフォーマット関数
      * @return $this
      */
     public function setMessageFormatter($messageFormatter)
@@ -252,7 +252,7 @@ class ErrorHandler
     /**
      * スタックトレースのフォーマット関数をセットします。
      *
-     * @param callable スタックトレースのフォーマット関数
+     * @param callable $traceFormatter スタックトレースのフォーマット関数
      * @return $this
      */
     public function setTraceFormatter($traceFormatter)
@@ -269,7 +269,7 @@ class ErrorHandler
     /**
      * ログ関数をセットします。
      *
-     * @param callable ログ関数
+     * @param callable $logger ログ関数
      * @return $this
      */
     public function setLogger($logger)
@@ -286,7 +286,7 @@ class ErrorHandler
     /**
      * エラー表示関数をセットします。
      *
-     * @param callable エラー表示関数
+     * @param callable $display エラー表示関数
      * @return $this
      */
     public function setDisplay($display)
@@ -303,7 +303,7 @@ class ErrorHandler
     /**
      * エラー画面遷移関数をセットします。
      *
-     * @param callable エラー画面遷移関数
+     * @param callable $forward エラー画面遷移関数
      * @return $this
      */
     public function setForward($forward)
@@ -340,9 +340,9 @@ class ErrorHandler
     /**
      * 例外を処理します。
      *
-     * @param Exception
+     * @param \Exception|\Throwable $exception 例外オブジェクト
      */
-    public function handleException(\Exception $exception)
+    public function handleException($exception)
     {
         $this->handle(
             $this->formatException($exception),
@@ -354,10 +354,10 @@ class ErrorHandler
     /**
      * 例外を発生元およびスタックトレースが付与されたメッセージに加工して返します。
      *
-     * @param Exception
+     * @param \Exception|\Throwable $exception 例外オブジェクト
      * @return string 例外メッセージ
      */
-    public function formatException(\Exception $exception)
+    public function formatException($exception)
     {
         return $this->formatMessage(
             $this->buildExceptionHeader($exception),
@@ -371,16 +371,19 @@ class ErrorHandler
     /**
      * PHPエラーを処理します。
      *
-     * @param int エラーレベル
-     * @param string エラーメッセージ
-     * @param string エラー発生元ファイル
-     * @param string エラー発生元ファイルの行番号
-     * @param array エラー発生元スコープでの全ての変数を格納した配列
+     * @param int $errno エラーレベル
+     * @param string $errstr エラーメッセージ
+     * @param string $errfile エラー発生元ファイル
+     * @param string $errline エラー発生元ファイルの行番号
+     * @param array $errcontext エラー発生元スコープでの全ての変数を格納した配列
+     * @return bool|null
      */
-    public function handleError($errno, $errstr, $errfile, $errline, $errcontext)
-    {
+    public function handleError(
+        /** @noinspection PhpUnusedParameterInspection */
+        $errno, $errstr, $errfile, $errline, $errcontext
+    ) {
         if (!(error_reporting() & $errno)) {
-            return;
+            return null;
         }
         $trace = debug_backtrace();
         if (!empty($trace)) {
@@ -398,11 +401,11 @@ class ErrorHandler
     /**
      * PHPエラーを発生元およびスタックトレースが付与されたメッセージに加工して返します。
      *
-     * @param int エラーレベル
-     * @param string エラーメッセージ
-     * @param string エラー発生元ファイル
-     * @param string エラー発生元ファイルの行番号
-     * @param array スタックトレース
+     * @param int $errno エラーレベル
+     * @param string $errstr エラーメッセージ
+     * @param string $errfile エラー発生元ファイル
+     * @param string $errline エラー発生元ファイルの行番号
+     * @param array $trace スタックトレース
      * @return string メッセージ
      */
     public function formatError($errno, $errstr, $errfile, $errline, $trace)
@@ -419,9 +422,9 @@ class ErrorHandler
     /**
      * ログ処理を実行します。
      *
-     * @param string エラーメッセージ
-     * @param int エラーレベル定数
-     * @param object Exception
+     * @param string $message エラーメッセージ
+     * @param int $error_level エラーレベル定数
+     * @param \Exception|\Throwable $exception 例外オブジェクト
      */
     public function log($message, $error_level = null, $exception = null)
     {
@@ -436,9 +439,9 @@ class ErrorHandler
     /**
      * エラー表示処理を実行します。
      *
-     * @param string エラーメッセージ
-     * @param int エラーレベル定数
-     * @param object Exception
+     * @param string $message エラーメッセージ
+     * @param int $error_level エラーレベル定数
+     * @param \Exception|\Throwable $exception 例外オブジェクト
      */
     public function display($message, $error_level = null, $exception = null)
     {
@@ -463,9 +466,9 @@ class ErrorHandler
     /**
      * エラー画面遷移処理を実行します。
      *
-     * @param string エラーメッセージ
-     * @param int エラーレベル定数
-     * @param object Exception
+     * @param string $message エラーメッセージ
+     * @param int $error_level エラーレベル定数
+     * @param \Exception|\Throwable $exception 例外オブジェクト
      */
     public function forward($message, $error_level = null, $exception = null)
     {
@@ -505,10 +508,10 @@ class ErrorHandler
     /**
      * 例外からエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param object \Exceptionまたは継承クラス
+     * @param \Exception|\Throwable $exception 例外オブジェクト
      * @return string
      */
-    public function buildExceptionHeader(\Exception $exception)
+    public function buildExceptionHeader($exception)
     {
         return $this->exceptionFormatter->buildHeader($exception);
     }
@@ -516,7 +519,7 @@ class ErrorHandler
     /**
      * PHPエラーレベル別にエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param int PHPエラーレベル
+     * @param int $errno PHPエラーレベル
      * @return string
      */
     public function buildErrorHeader($errno)
@@ -527,11 +530,11 @@ class ErrorHandler
     /**
      * 出力用のエラーメッセージを生成して返します。
      *
-     * @param string エラーヘッダ
-     * @param string エラーメッセージ
-     * @param string エラー発生元ファイルパス
-     * @param string エラー発生元ファイルの行番号
-     * @param string スタックトレース
+     * @param string $header エラーヘッダ
+     * @param string $message エラーメッセージ
+     * @param string $file エラー発生元ファイルパス
+     * @param string $line エラー発生元ファイルの行番号
+     * @param string $trace 整形済みのスタックトレース
      * @return string
      */
     private function formatMessage($header, $message, $file, $line, $trace)
@@ -543,7 +546,7 @@ class ErrorHandler
     /**
      * スタックトレースの配列を文字列に整形して返します。
      *
-     * @param array stackTrace
+     * @param array $trace スタックトレース
      * @return string
      */
     private function formatTrace(array $trace)
@@ -555,13 +558,13 @@ class ErrorHandler
     /**
      * エラーメッセージを処理します。
      *
-     * @param string エラーメッセージ
-     * @param int エラーレベル
-     * @param object Exception
+     * @param string $message エラーメッセージ
+     * @param int $error_level エラーレベル
+     * @param \Exception|\Throwable $exception 例外オブジェクト
      */
     private function handle($message, $error_level = null, $exception = null)
     {
-        if (isset($exception) && !($exception instanceof \Exception)) {
+        if (isset($exception) && !($exception instanceof \Exception) && !($exception instanceof \Throwable)) {
             throw new \InvalidArgumentException(
                 sprintf('The Exception is not valid type:%s',
                     (is_object($exception)) ? get_class($exception) : gettype($exception)));
@@ -574,7 +577,8 @@ class ErrorHandler
     /**
      * HTML出力用に文字列をエスケープして返します。
      *
-     * @param string 文字列
+     * @param string $var 文字列
+     * @return string
      */
     private function escapeHtml($var)
     {
@@ -584,7 +588,8 @@ class ErrorHandler
     /**
      * PHPエラー定数値をこのクラスのエラーレベル定数に変換して返します。
      *
-     * @int PHPエラー定数
+     * @param int $errno PHPエラー定数
+     * @return int
      */
     private function convertErrorLevel($errno)
     {
@@ -611,7 +616,8 @@ class ErrorHandler
      * __get
      * $this->foo で $this->getFoo() または $this->getOption('foo') が呼ばれます。
      *
-     * @param string
+     * @param string $name
+     * @return mixed
      */
     public function __get($name)
     {
@@ -626,8 +632,9 @@ class ErrorHandler
      * __set
      * $this->foo = $var で $this->setFoo($var) または $this->setOption('foo', $var) が呼ばれます。
      *
-     * @param string
-     * @param mixed
+     * @param string $name
+     * @param mixed $value
+     * @return \Volcanus\Error\ErrorHandler
      */
     public function __set($name, $value)
     {
@@ -642,11 +649,11 @@ class ErrorHandler
      * __invoke
      * 引数に応じて例外ハンドラまたはエラーハンドラとして振る舞います。
      *
-     * @param  mixed
+     * @param  mixed $error
      */
     public function __invoke($error /*[,$errstr[,$errfile[,$errline[,$errcontext]]]]*/)
     {
-        if ($error instanceof \Exception) {
+        if ($error instanceof \Exception || $error instanceof \Throwable) {
             $this->handleException($error);
         } else {
             $args = func_get_args();

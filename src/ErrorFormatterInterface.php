@@ -19,10 +19,10 @@ interface ErrorFormatterInterface
     /**
      * エラー情報を文字列に整形して返します。
      *
-     * @param int エラーレベル
-     * @param string エラーメッセージ
-     * @param string エラー発生元ファイル
-     * @param string エラー発生元ファイルの行番号
+     * @param int $errno エラーレベル
+     * @param string $errstr エラーメッセージ
+     * @param string $errfile エラー発生元ファイル
+     * @param string $errline エラー発生元ファイルの行番号
      * @return string
      */
     public function __invoke($errno, $errstr, $errfile, $errline);
@@ -30,10 +30,10 @@ interface ErrorFormatterInterface
     /**
      * エラー情報を文字列に整形して返します。
      *
-     * @param int エラーレベル
-     * @param string エラーメッセージ
-     * @param string エラー発生元ファイル
-     * @param string エラー発生元ファイルの行番号
+     * @param int $errno エラーレベル
+     * @param string $errstr エラーメッセージ
+     * @param string $errfile エラー発生元ファイル
+     * @param string $errline エラー発生元ファイルの行番号
      * @return string
      */
     public function format($errno, $errstr, $errfile, $errline);
@@ -41,7 +41,7 @@ interface ErrorFormatterInterface
     /**
      * PHPエラーレベル別にエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param int エラーレベル
+     * @param int $errno エラーレベル
      * @return string
      */
     public function buildHeader($errno);

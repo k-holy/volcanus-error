@@ -8,9 +8,6 @@
 
 namespace Volcanus\Error;
 
-use Volcanus\Error\TraceFormatterInterface;
-use Volcanus\Error\Trace;
-
 /**
  * スタックトレースイテレータ
  *
@@ -25,7 +22,7 @@ class StackTraceIterator implements \Iterator, \Countable
     private $stackTrace;
 
     /**
-     * @var TraceFormatterInterface トレースフォーマッタ
+     * @var \Volcanus\Error\TraceFormatterInterface トレースフォーマッタ
      */
     private $formatter;
 
@@ -37,9 +34,9 @@ class StackTraceIterator implements \Iterator, \Countable
     /**
      * コンストラクタ
      *
-     * @param TraceFormatterInterface トレースフォーマッタ
+     * @param \Volcanus\Error\TraceFormatterInterface $formatter トレースフォーマッタ
      */
-    public function __construct(TraceFormatterInterface $formatter)
+    public function __construct(\Volcanus\Error\TraceFormatterInterface $formatter)
     {
         $this->formatter = $formatter;
     }
@@ -47,7 +44,7 @@ class StackTraceIterator implements \Iterator, \Countable
     /**
      * オブジェクトを初期化します。
      *
-     * @param array スタックトレース
+     * @param array $stackTrace スタックトレース
      * @return $this
      */
     public function initialize(array $stackTrace = array())
@@ -70,11 +67,11 @@ class StackTraceIterator implements \Iterator, \Countable
     /**
      * Iterator::current()
      *
-     * @return array
+     * @return \Volcanus\Error\Trace
      */
     public function current()
     {
-        return new Trace($this->formatter, $this->stackTrace[$this->position]);
+        return new \Volcanus\Error\Trace($this->formatter, $this->stackTrace[$this->position]);
     }
 
     /**
