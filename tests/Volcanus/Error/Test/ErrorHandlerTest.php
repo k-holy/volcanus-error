@@ -8,6 +8,7 @@
 
 namespace Volcanus\Error\Test;
 
+use PHPUnit\Framework\TestCase;
 use Volcanus\Error\ErrorHandler;
 
 /**
@@ -15,10 +16,10 @@ use Volcanus\Error\ErrorHandler;
  *
  * @author k.holy74@gmail.com
  */
-class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
+class ErrorHandlerTest extends TestCase
 {
 
-    /** @var \Volcanus\Error\ErrorHandler */
+    /** @var ErrorHandler */
     private $error;
 
     /** @var array */
@@ -27,7 +28,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
     /** @var int */
     private $old_error_reporting;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->old_error_reporting = error_reporting();
         error_reporting(-1);
@@ -36,7 +37,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $this->log_results = [];
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         $this->error->clearBuffer();
         error_reporting($this->old_error_reporting);
@@ -50,68 +51,24 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
     public function testDefaultInit()
     {
         $this->error->init();
-        $this->assertEquals($this->error->getOption('output_encoding'), mb_internal_encoding());
-        $this->assertEquals($this->error->getOption('log_level'), ErrorHandler::LEVEL_ALL);
-        $this->assertEquals($this->error->getOption('display_level'), ErrorHandler::LEVEL_ALL);
-        $this->assertEquals($this->error->getOption('forward_level'), ErrorHandler::LEVEL_EXCEPTION | ErrorHandler::LEVEL_ERROR);
+        $this->assertEquals(mb_internal_encoding(), $this->error->getOption('output_encoding'));
+        $this->assertEquals(ErrorHandler::LEVEL_ALL, $this->error->getOption('log_level'));
+        $this->assertEquals(ErrorHandler::LEVEL_ALL, $this->error->getOption('display_level'));
+        $this->assertEquals(ErrorHandler::LEVEL_EXCEPTION | ErrorHandler::LEVEL_ERROR, $this->error->getOption('forward_level'));
         $this->assertTrue($this->error->getOption('display_html'));
         $this->assertFalse($this->error->getOption('display_buffering'));
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testRaiseRuntimeExceptionWhenGetUnsupportedOption()
     {
+        $this->expectException(\RuntimeException::class);
         $this->error->getOption('FOO');
     }
 
-    /**
-     * @expectedException \RuntimeException
-     */
     public function testRaiseRuntimeExceptionWhenSetUnsupportedOption()
     {
+        $this->expectException(\RuntimeException::class);
         $this->error->setOption('FOO', 'BAR');
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testRaiseInvalidArgumentExceptionWhenSetMessageFormatterIsNotCallable()
-    {
-        $this->error->setMessageFormatter([]);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testRaiseInvalidArgumentExceptionWhenSetTraceFormatterIsNotCallable()
-    {
-        $this->error->setTraceFormatter([]);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testRaiseInvalidArgumentExceptionWhenSetLoggerIsNotCallable()
-    {
-        $this->error->setLogger([]);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testRaiseInvalidArgumentExceptionWhenSetDisplayIsNotCallable()
-    {
-        $this->error->setDisplay([]);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testRaiseInvalidArgumentExceptionWhenSetForwardIsNotCallable()
-    {
-        $this->error->setForward([]);
     }
 
     public function testLogger()
@@ -319,35 +276,6 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         ob_end_clean();
     }
 
-    public function testBuildErrorHeader()
-    {
-        $error_levels = [
-            E_ERROR,
-            E_WARNING,
-            E_NOTICE,
-            E_STRICT,
-            E_RECOVERABLE_ERROR,
-            E_DEPRECATED,
-            E_USER_ERROR,
-            E_USER_WARNING,
-            E_USER_NOTICE,
-            E_USER_DEPRECATED,
-        ];
-        foreach ($error_levels as $error_level) {
-            $this->assertStringEndsWith(sprintf('[%d]:', $error_level),
-                $this->error->buildErrorHeader($error_level));
-        }
-        $this->assertStringEndsWith('[0]:', $this->error->buildErrorHeader(0));
-    }
-
-    public function testBuildExceptionHeader()
-    {
-        $code = 999;
-        $exception = new \Exception('ERR', $code);
-        $this->assertStringEndsWith(sprintf('%s[%d]:', get_class($exception), $code),
-            $this->error->buildExceptionHeader($exception));
-    }
-
     public function testGetErrorHandler()
     {
         $this->assertTrue(is_callable($this->error->getErrorHandler()));
@@ -358,6 +286,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(is_callable($this->error->getExceptionHandler()));
     }
 
+    /** @noinspection PhpUnreachableStatementInspection */
     public function testErrorHandler()
     {
         $this->error->setOption('log_level', ErrorHandler::LEVEL_NONE);
@@ -414,7 +343,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $this->error->setOption('log_level', ErrorHandler::LEVEL_EXCEPTION);
         $this->error->log('HttpError', ErrorHandler::LEVEL_EXCEPTION,
             new ErrorHandlerTestException('HttpError', 404));
-        $this->assertEquals($log_results[0], 'HttpError: 404 Not Found');
+        $this->assertEquals('HttpError: 404 Not Found', $log_results[0]);
     }
 
     public function testDisplayWithException()
@@ -430,7 +359,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         ob_start();
         $this->error->display('HttpError', ErrorHandler::LEVEL_EXCEPTION,
             new ErrorHandlerTestException('HttpError', 404));
-        $this->assertEquals(ob_get_contents(), 'HttpError: 404 Not Found');
+        $this->assertEquals('HttpError: 404 Not Found', ob_get_contents());
         ob_end_clean();
     }
 
@@ -447,7 +376,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         ob_start();
         $this->error->forward('HttpError', ErrorHandler::LEVEL_EXCEPTION,
             new ErrorHandlerTestException('HttpError', 404));
-        $this->assertEquals(ob_get_contents(), 'HttpError: 404 Not Found');
+        $this->assertEquals('HttpError: 404 Not Found', ob_get_contents());
         ob_end_clean();
     }
 
@@ -459,7 +388,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $this->error->setOption('forward_level', ErrorHandler::LEVEL_NONE);
         $this->error->setOption('log_level', ErrorHandler::LEVEL_ALL);
 
-        $this->error->handleError(E_NOTICE, $message, __FILE__, __LINE__, null);
+        $this->error->handleError(E_NOTICE, $message, __FILE__, __LINE__);
         $this->assertNotEmpty($this->log_results);
     }
 
@@ -472,11 +401,11 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $this->error->setOption('log_level', ErrorHandler::LEVEL_ALL);
 
         error_reporting(E_ALL & ~E_NOTICE);
-        $this->error->handleError(E_NOTICE, $message, __FILE__, __LINE__, null);
+        $this->error->handleError(E_NOTICE, $message, __FILE__, __LINE__);
         $this->assertEmpty($this->log_results);
 
         error_reporting(E_ALL);
-        $this->error->handleError(E_NOTICE, $message, __FILE__, __LINE__, null);
+        $this->error->handleError(E_NOTICE, $message, __FILE__, __LINE__);
         $this->assertNotEmpty($this->log_results);
     }
 
@@ -486,7 +415,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $trace_formatter = $this->traceFormatter();
         $this->error->setMessageFormatter($message_formatter);
         $this->error->setTraceFormatter($trace_formatter);
-        $exception = new \Exception('Now you die!');
+        $exception = new \RuntimeException('Now you die!');
         $this->assertEquals(
             $this->error->formatException($exception),
             $message_formatter(
@@ -509,7 +438,7 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         $errstr = 'ERR';
         $errfile = __FILE__;
         $errline = __LINE__;
-        $trace = debug_backtrace();
+        $trace = debug_backtrace(0);
         $this->assertEquals(
             $this->error->formatError(
                 $errno,
@@ -528,19 +457,28 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         );
     }
 
-    private function traceFormatter()
+    private function traceFormatter(): \Closure
     {
         return function ($trace) {
             $formatted_trace = [];
             foreach ($trace as $i => $t) {
+                $args = '';
+                if (isset($t['args'])) {
+                    if (is_object($t['args'])) {
+                        $args = get_class($t['args']);
+                    } else {
+                        $args = gettype($t['args']);
+                    }
+                }
                 $formatted_trace[] = sprintf('#%d %s(%d): %s%s%s(%s)',
                     $i,
-                    (isset($t['file'])) ? $t['file'] : '',
-                    (isset($t['line'])) ? $t['line'] : '',
-                    (isset($t['class'])) ? $t['class'] : '',
-                    (isset($t['type'])) ? $t['type'] : '',
-                    (isset($t['function'])) ? $t['function'] : '',
-                    (is_object($t['args'])) ? get_class($t['args']) : gettype($t['args']));
+                    $t['file'] ?? '',
+                    $t['line'] ?? '',
+                    $t['class'] ?? '',
+                    $t['type'] ?? '',
+                    $t['function'] ?? '',
+                    $args
+                );
             }
             return (count($formatted_trace) >= 1)
                 ? sprintf("\nStack trace:\n%s", implode("\n", $formatted_trace))
@@ -548,14 +486,14 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         };
     }
 
-    private function messageFormatter()
+    private function messageFormatter(): \Closure
     {
         return function ($header, $message, $file, $line, $trace) {
             return sprintf('%s %s in %s on line %d%s', $header, $message, $file, $line, $trace);
         };
     }
 
-    private function logger()
+    private function logger(): \Closure
     {
         $log_results = &$this->log_results;
         return function ($message) use (&$log_results) {
@@ -563,37 +501,18 @@ class ErrorHandlerTest extends \PHPUnit\Framework\TestCase
         };
     }
 
-    private function display()
+    private function display(): \Closure
     {
         return function ($message) {
             echo $message;
         };
     }
 
-    private function forward()
+    private function forward(): \Closure
     {
         return function ($message) {
             echo $message;
         };
-    }
-
-}
-
-class ErrorHandlerTestException extends \RuntimeException
-{
-    public function getHttpStatus($code)
-    {
-        switch ($code) {
-            case 400:
-                return '400 Bad Request';
-            case 403:
-                return '403 Forbidden';
-            case 404:
-                return '404 Not Found';
-            case 405:
-                return '405 Method Not Allowed';
-        }
-        return '500 Internal Server Error';
     }
 
 }

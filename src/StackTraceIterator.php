@@ -22,7 +22,7 @@ class StackTraceIterator implements \Iterator, \Countable
     private $stackTrace;
 
     /**
-     * @var \Volcanus\Error\TraceFormatterInterface トレースフォーマッタ
+     * @var TraceFormatterInterface トレースフォーマッタ
      */
     private $formatter;
 
@@ -34,9 +34,9 @@ class StackTraceIterator implements \Iterator, \Countable
     /**
      * コンストラクタ
      *
-     * @param \Volcanus\Error\TraceFormatterInterface $formatter トレースフォーマッタ
+     * @param TraceFormatterInterface $formatter トレースフォーマッタ
      */
-    public function __construct(\Volcanus\Error\TraceFormatterInterface $formatter)
+    public function __construct(TraceFormatterInterface $formatter)
     {
         $this->formatter = $formatter;
     }
@@ -45,9 +45,9 @@ class StackTraceIterator implements \Iterator, \Countable
      * オブジェクトを初期化します。
      *
      * @param array $stackTrace スタックトレース
-     * @return $this
+     * @return self
      */
-    public function initialize(array $stackTrace = [])
+    public function initialize(array $stackTrace = []): self
     {
         $this->position = 0;
         if (!empty($stackTrace)) {
@@ -67,11 +67,11 @@ class StackTraceIterator implements \Iterator, \Countable
     /**
      * Iterator::current()
      *
-     * @return \Volcanus\Error\Trace
+     * @return Trace
      */
-    public function current()
+    public function current(): Trace
     {
-        return new \Volcanus\Error\Trace($this->formatter, $this->stackTrace[$this->position]);
+        return new Trace($this->formatter, $this->stackTrace[$this->position]);
     }
 
     /**
@@ -95,7 +95,7 @@ class StackTraceIterator implements \Iterator, \Countable
      *
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return isset($this->stackTrace[$this->position]);
     }
@@ -105,7 +105,7 @@ class StackTraceIterator implements \Iterator, \Countable
      *
      * @return int
      */
-    public function count()
+    public function count(): int
     {
         return count($this->stackTrace);
     }

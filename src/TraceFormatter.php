@@ -22,7 +22,7 @@ class TraceFormatter implements TraceFormatterInterface
      * @param array $stackTrace スタックトレース
      * @return string
      */
-    public function __invoke(array $stackTrace)
+    public function __invoke(array $stackTrace): string
     {
         return $this->arrayToString($stackTrace);
     }
@@ -33,7 +33,7 @@ class TraceFormatter implements TraceFormatterInterface
      * @param array $stackTrace スタックトレース
      * @return string
      */
-    public function arrayToString(array $stackTrace)
+    public function arrayToString(array $stackTrace): string
     {
         $results = [];
         foreach ($stackTrace as $trace) {
@@ -50,20 +50,20 @@ class TraceFormatter implements TraceFormatterInterface
      * @param array $trace 1レコード分のトレース
      * @return string
      */
-    public function format(array $trace)
+    public function format(array $trace): string
     {
         return sprintf('%s: %s(%s)',
             $this->formatLocation(
-                isset($trace['file']) ? $trace['file'] : null,
-                isset($trace['line']) ? $trace['line'] : null
+                $trace['file'] ?? null,
+                $trace['line'] ?? null
             ),
             $this->formatFunction(
-                isset($trace['class']) ? $trace['class'] : null,
-                isset($trace['type']) ? $trace['type'] : null,
-                isset($trace['function']) ? $trace['function'] : null
+                $trace['class'] ?? null,
+                $trace['type'] ?? null,
+                $trace['function'] ?? null
             ),
             $this->formatArguments(
-                isset($trace['args']) ? $trace['args'] : null
+                $trace['args'] ?? null
             )
         );
     }
@@ -71,11 +71,11 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * トレースのファイル情報を文字列に整形して返します。
      *
-     * @param string $file ファイルパス
-     * @param string $line 行番号
+     * @param string|null $file ファイルパス
+     * @param string|null $line 行番号
      * @return string
      */
-    public function formatLocation($file, $line)
+    public function formatLocation(?string $file, ?string $line): string
     {
         return (isset($file) && isset($line))
             ? sprintf('%s(%d)', $file, $line)
@@ -85,25 +85,25 @@ class TraceFormatter implements TraceFormatterInterface
     /**
      * トレースの関数呼び出し情報を文字列に整形して返します。
      *
-     * @param string $class クラス名
-     * @param string $type 呼び出し種別
-     * @param string $function 関数名/メソッド名
+     * @param string|null $class クラス名
+     * @param string|null $type 呼び出し種別
+     * @param string|null $function 関数名/メソッド名
      * @return string
      */
-    public function formatFunction($class, $type, $function)
+    public function formatFunction(?string $class, ?string $type, ?string $function): string
     {
-        return sprintf('%s%s%s', $class ?: '', $type ?: '', $function ?: '');
+        return sprintf('%s%s%s', $class ?? '', $type ?? '', $function ?? '');
     }
 
     /**
      * トレースの関数呼び出しの引数を文字列に整形して返します。
      *
-     * @param array $arguments 引数の配列
+     * @param array|null $arguments 引数の配列
      * @return string
      */
-    public function formatArguments($arguments)
+    public function formatArguments(?array $arguments): string
     {
-        if (!isset($arguments) || empty($arguments)) {
+        if (empty($arguments)) {
             return '';
         }
         $self = $this;
@@ -128,7 +128,7 @@ class TraceFormatter implements TraceFormatterInterface
      * @param mixed $var
      * @return string
      */
-    public function formatVar($var)
+    public function formatVar($var): string
     {
         if (is_null($var)) {
             return 'NULL';
