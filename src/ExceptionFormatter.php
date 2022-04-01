@@ -13,7 +13,7 @@ namespace Volcanus\Error;
  *
  * @author k.holy74@gmail.com
  */
-class ExceptionFormatter implements ExceptionFormatterInterface
+class ExceptionFormatter
 {
 
     /**
@@ -22,9 +22,9 @@ class ExceptionFormatter implements ExceptionFormatterInterface
      * @param \Exception|\Throwable $e 例外オブジェクト
      * @return string
      */
-    public function __invoke($e)
+    public function __invoke($e): string
     {
-        return $this->format($e);
+        return self::format($e);
     }
 
     /**
@@ -33,10 +33,10 @@ class ExceptionFormatter implements ExceptionFormatterInterface
      * @param \Exception|\Throwable $e 例外オブジェクト
      * @return string
      */
-    public function format($e)
+    public static function format($e): string
     {
         return sprintf("%s '%s' in %s on line %u",
-            $this->buildHeader($e),
+            self::buildHeader($e),
             $e->getMessage(),
             $e->getFile(),
             $e->getLine()
@@ -49,7 +49,7 @@ class ExceptionFormatter implements ExceptionFormatterInterface
      * @param \Exception|\Throwable $e 例外オブジェクト
      * @return string
      */
-    public function buildHeader($e)
+    public static function buildHeader($e): string
     {
         return sprintf("Uncaught Exception %s[%d]:",
             get_class($e),
