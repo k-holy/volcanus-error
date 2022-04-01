@@ -21,7 +21,7 @@ class Trace implements \ArrayAccess
 {
 
     /**
-     * @var \Volcanus\Error\TraceFormatterInterface トレースフォーマッタ
+     * @var TraceFormatterInterface トレースフォーマッタ
      */
     private $formatter;
 
@@ -33,10 +33,10 @@ class Trace implements \ArrayAccess
     /**
      * コンストラクタ
      *
-     * @param \Volcanus\Error\TraceFormatterInterface $formatter トレースフォーマッタ
+     * @param TraceFormatterInterface $formatter トレースフォーマッタ
      * @param array $trace トレース情報の連想配列
      */
-    public function __construct(\Volcanus\Error\TraceFormatterInterface $formatter, array $trace)
+    public function __construct(TraceFormatterInterface $formatter, array $trace)
     {
         $this->formatter = $formatter;
         $this->initialize($trace);
@@ -45,10 +45,10 @@ class Trace implements \ArrayAccess
     /**
      * オブジェクトを初期化します。
      *
-     * @param array $trace トレース情報の連想配列
-     * @return $this
+     * @param array|null $trace トレース情報の連想配列
+     * @return self
      */
-    public function initialize(array $trace = null)
+    public function initialize(array $trace = null): self
     {
         $this->trace = ($trace !== null) ? $trace : [];
         return $this;
@@ -59,11 +59,11 @@ class Trace implements \ArrayAccess
      *
      * @return string
      */
-    public function formatLocation()
+    public function formatLocation(): string
     {
         return $this->formatter->formatLocation(
-            isset($this->trace['file']) ? $this->trace['file'] : null,
-            isset($this->trace['line']) ? $this->trace['line'] : null
+            $this->trace['file'] ?? null,
+            $this->trace['line'] ?? null
         );
     }
 
@@ -72,12 +72,12 @@ class Trace implements \ArrayAccess
      *
      * @return string
      */
-    public function formatFunction()
+    public function formatFunction(): string
     {
         return $this->formatter->formatFunction(
-            isset($this->trace['class']) ? $this->trace['class'] : null,
-            isset($this->trace['type']) ? $this->trace['type'] : null,
-            isset($this->trace['function']) ? $this->trace['function'] : null
+            $this->trace['class'] ?? null,
+            $this->trace['type'] ?? null,
+            $this->trace['function'] ?? null
         );
     }
 
@@ -86,10 +86,10 @@ class Trace implements \ArrayAccess
      *
      * @return string
      */
-    public function formatArgument()
+    public function formatArgument(): string
     {
         return $this->formatter->formatArguments(
-            isset($this->trace['args']) ? $this->trace['args'] : null
+            $this->trace['args'] ?? null
         );
     }
 
@@ -98,7 +98,7 @@ class Trace implements \ArrayAccess
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'location' => $this->formatLocation(),
@@ -148,24 +148,24 @@ class Trace implements \ArrayAccess
     /**
      * ArrayAccess::offsetExists()
      *
-     * @param mixed $name
+     * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($name)
+    public function offsetExists($offset): bool
     {
-        return $this->__isset($name);
+        return $this->__isset($offset);
     }
 
     /**
      * ArrayAccess::offsetGet()
      *
-     * @param mixed $name
+     * @param mixed $offset
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function offsetGet($name)
+    public function offsetGet($offset)
     {
-        return $this->__get($name);
+        return $this->__get($offset);
     }
 
     /**
@@ -216,27 +216,27 @@ class Trace implements \ArrayAccess
     /**
      * ArrayAccess::offsetSet()
      *
-     * @param mixed $name
+     * @param mixed $offset
      * @param mixed $value
      * @throws \LogicException
      */
-    final public function offsetSet($name, $value)
+    final public function offsetSet($offset, $value)
     {
         throw new \LogicException(
-            sprintf('The property "%s" could not set.', $name)
+            sprintf('The property "%s" could not set.', $offset)
         );
     }
 
     /**
      * ArrayAccess::offsetUnset()
      *
-     * @param mixed $name
+     * @param mixed $offset
      * @throws \LogicException
      */
-    final public function offsetUnset($name)
+    final public function offsetUnset($offset)
     {
         throw new \LogicException(
-            sprintf('The property "%s" could not unset.', $name)
+            sprintf('The property "%s" could not unset.', $offset)
         );
     }
 

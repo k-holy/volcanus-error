@@ -13,7 +13,7 @@ namespace Volcanus\Error;
  *
  * @author k.holy74@gmail.com
  */
-class ErrorFormatter implements ErrorFormatterInterface
+class ErrorFormatter
 {
 
     /* @var array PHPエラーレベル */
@@ -23,11 +23,11 @@ class ErrorFormatter implements ErrorFormatterInterface
         E_NOTICE => 'Notice',
         E_STRICT => 'Strict standards',
         E_RECOVERABLE_ERROR => 'Catchable fatal error',
-        E_DEPRECATED => 'Depricated',
+        E_DEPRECATED => 'Deprecated',
         E_USER_ERROR => 'User Fatal error',
         E_USER_WARNING => 'User Warning',
         E_USER_NOTICE => 'User Notice',
-        E_USER_DEPRECATED => 'User Depricated',
+        E_USER_DEPRECATED => 'User Deprecated',
     ];
 
     /**
@@ -39,9 +39,9 @@ class ErrorFormatter implements ErrorFormatterInterface
      * @param string $errline エラー発生元ファイルの行番号
      * @return string
      */
-    public function __invoke($errno, $errstr, $errfile, $errline)
+    public function __invoke(int $errno, string $errstr, string $errfile, string $errline): string
     {
-        return $this->format($errno, $errstr, $errfile, $errline);
+        return self::format($errno, $errstr, $errfile, $errline);
     }
 
     /**
@@ -53,10 +53,10 @@ class ErrorFormatter implements ErrorFormatterInterface
      * @param string $errline エラー発生元ファイルの行番号
      * @return string
      */
-    public function format($errno, $errstr, $errfile, $errline)
+    public static function format(int $errno, string $errstr, string $errfile, string $errline): string
     {
         return sprintf("%s '%s' in %s on line %u",
-            $this->buildHeader($errno),
+            self::buildHeader($errno),
             $errstr,
             $errfile,
             $errline
@@ -69,13 +69,9 @@ class ErrorFormatter implements ErrorFormatterInterface
      * @param int $errno エラーレベル
      * @return string
      */
-    public function buildHeader($errno)
+    public static function buildHeader(int $errno): string
     {
-        return sprintf('%s[%d]:', (isset(static::$errorLevels[$errno]))
-            ? static::$errorLevels[$errno]
-            : 'Unknown error',
-            $errno
-        );
+        return sprintf('%s[%d]:', static::$errorLevels[$errno] ?? 'Unknown error', $errno);
     }
 
 }
