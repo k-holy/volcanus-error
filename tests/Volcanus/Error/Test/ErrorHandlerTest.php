@@ -438,7 +438,7 @@ class ErrorHandlerTest extends TestCase
         $errstr = 'ERR';
         $errfile = __FILE__;
         $errline = __LINE__;
-        $trace = debug_backtrace();
+        $trace = debug_backtrace(0);
         $this->assertEquals(
             $this->error->formatError(
                 $errno,
@@ -462,14 +462,23 @@ class ErrorHandlerTest extends TestCase
         return function ($trace) {
             $formatted_trace = [];
             foreach ($trace as $i => $t) {
+                $args = '';
+                if (isset($t['args'])) {
+                    if (is_object($t['args'])) {
+                        $args = get_class($t['args']);
+                    } else {
+                        $args = gettype($t['args']);
+                    }
+                }
                 $formatted_trace[] = sprintf('#%d %s(%d): %s%s%s(%s)',
                     $i,
-                    (isset($t['file'])) ? $t['file'] : '',
-                    (isset($t['line'])) ? $t['line'] : '',
-                    (isset($t['class'])) ? $t['class'] : '',
-                    (isset($t['type'])) ? $t['type'] : '',
-                    (isset($t['function'])) ? $t['function'] : '',
-                    (is_object($t['args'])) ? get_class($t['args']) : gettype($t['args']));
+                    $t['file'] ?? '',
+                    $t['line'] ?? '',
+                    $t['class'] ?? '',
+                    $t['type'] ?? '',
+                    $t['function'] ?? '',
+                    $args
+                );
             }
             return (count($formatted_trace) >= 1)
                 ? sprintf("\nStack trace:\n%s", implode("\n", $formatted_trace))
