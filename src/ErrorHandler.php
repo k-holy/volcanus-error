@@ -51,14 +51,8 @@ class ErrorHandler
     /* @var callable エラーメッセージフォーマット関数 */
     private $messageFormatter;
 
-    /* @var \Volcanus\Error\TraceFormatterInterface スタックトレースフォーマット関数 */
+    /* @var TraceFormatterInterface スタックトレースフォーマット関数 */
     private $traceFormatter;
-
-    /* @var \Volcanus\Error\ErrorFormatterInterface エラーフォーマット関数 */
-    private $errorFormatter;
-
-    /* @var \Volcanus\Error\ExceptionFormatterInterface 例外フォーマット関数 */
-    private $exceptionFormatter;
 
     /* @var callable ログ関数 */
     private $logger;
@@ -97,9 +91,9 @@ class ErrorHandler
      * インスタンスを生成して返します。
      *
      * @param array $options オプション設定
-     * @return $this
+     * @return self
      */
-    public static function instance(array $options = [])
+    public static function instance(array $options = []): self
     {
         return new self($options);
     }
@@ -108,9 +102,9 @@ class ErrorHandler
      * インスタンスを初期化して返します。
      *
      * @param array $options オプション設定
-     * @return $this
+     * @return self
      */
-    public function init(array $options = [])
+    public function init(array $options = []): self
     {
         $this->options = [];
         $this->options['output_encoding'] = mb_internal_encoding();
@@ -123,12 +117,10 @@ class ErrorHandler
             return sprintf("%s '%s' in %s on line %d%s", $header, $message, $file, $line, $trace);
         };
         $this->traceFormatter = new TraceFormatter();
-        $this->errorFormatter = new ErrorFormatter();
-        $this->exceptionFormatter = new ExceptionFormatter();
         $this->logger = null;
         $this->display = null;
         $this->forward = null;
-        $this->clearBuffer();
+        $this->buffer = [];
         if (!empty($options)) {
             foreach ($options as $name => $value) {
                 $this->setOption($name, $value);
@@ -143,7 +135,7 @@ class ErrorHandler
      * @param string $name オプション項目名
      * @return mixed オプション項目値
      */
-    public function getOption($name)
+    public function getOption(string $name)
     {
         if (!array_key_exists($name, $this->options)) {
             throw new \RuntimeException(
@@ -157,9 +149,9 @@ class ErrorHandler
      *
      * @param string $name オプション項目名
      * @param mixed $value オプション項目値
-     * @return $this
+     * @return self
      */
-    public function setOption($name, $value)
+    public function setOption(string $name, $value): self
     {
         if (!array_key_exists($name, $this->options)) {
             throw new \RuntimeException(
@@ -193,58 +185,13 @@ class ErrorHandler
     }
 
     /**
-     * PHPエラーのフォーマット関数をセットします。
-     *
-     * @param callable $errorFormatter PHPエラーのフォーマット関数
-     * @return $this
-     */
-    public function setErrorFormatter($errorFormatter)
-    {
-        if (!is_callable($errorFormatter)) {
-            throw new \InvalidArgumentException(
-                sprintf('The errorFormatter is not callable. type:%s',
-                    is_object($errorFormatter) ? get_class($errorFormatter) : gettype($errorFormatter)
-                )
-            );
-        }
-        $this->errorFormatter = $errorFormatter;
-        return $this;
-    }
-
-    /**
-     * 例外のフォーマット関数をセットします。
-     *
-     * @param callable $exceptionFormatter 例外のフォーマット関数
-     * @return $this
-     */
-    public function setExceptionFormatter($exceptionFormatter)
-    {
-        if (!is_callable($exceptionFormatter)) {
-            throw new \InvalidArgumentException(
-                sprintf('The exceptionFormatter is not callable. type:%s',
-                    is_object($exceptionFormatter) ? get_class($exceptionFormatter) : gettype($exceptionFormatter)
-                )
-            );
-        }
-        $this->exceptionFormatter = $exceptionFormatter;
-        return $this;
-    }
-
-    /**
      * エラーメッセージのフォーマット関数をセットします。
      *
      * @param callable $messageFormatter エラーメッセージのフォーマット関数
-     * @return $this
+     * @return self
      */
-    public function setMessageFormatter($messageFormatter)
+    public function setMessageFormatter(callable $messageFormatter): self
     {
-        if (!is_callable($messageFormatter)) {
-            throw new \InvalidArgumentException(
-                sprintf('The messageFormatter is not callable. type:%s',
-                    is_object($messageFormatter) ? get_class($messageFormatter) : gettype($messageFormatter)
-                )
-            );
-        }
         $this->messageFormatter = $messageFormatter;
         return $this;
     }
@@ -253,15 +200,10 @@ class ErrorHandler
      * スタックトレースのフォーマット関数をセットします。
      *
      * @param callable $traceFormatter スタックトレースのフォーマット関数
-     * @return $this
+     * @return self
      */
-    public function setTraceFormatter($traceFormatter)
+    public function setTraceFormatter(callable $traceFormatter): self
     {
-        if (!is_callable($traceFormatter)) {
-            throw new \InvalidArgumentException(
-                sprintf('The traceFormatter is not callable. type:%s',
-                    (is_object($traceFormatter)) ? get_class($traceFormatter) : gettype($traceFormatter)));
-        }
         $this->traceFormatter = $traceFormatter;
         return $this;
     }
@@ -270,15 +212,10 @@ class ErrorHandler
      * ログ関数をセットします。
      *
      * @param callable $logger ログ関数
-     * @return $this
+     * @return self
      */
-    public function setLogger($logger)
+    public function setLogger(callable $logger): self
     {
-        if (!is_callable($logger)) {
-            throw new \InvalidArgumentException(
-                sprintf('The logger is not callable. type:%s',
-                    (is_object($logger)) ? get_class($logger) : gettype($logger)));
-        }
         $this->logger = $logger;
         return $this;
     }
@@ -287,15 +224,10 @@ class ErrorHandler
      * エラー表示関数をセットします。
      *
      * @param callable $display エラー表示関数
-     * @return $this
+     * @return self
      */
-    public function setDisplay($display)
+    public function setDisplay(callable $display): self
     {
-        if (!is_callable($display)) {
-            throw new \InvalidArgumentException(
-                sprintf('The display is not callable. type:%s',
-                    (is_object($display)) ? get_class($display) : gettype($display)));
-        }
         $this->display = $display;
         return $this;
     }
@@ -304,15 +236,10 @@ class ErrorHandler
      * エラー画面遷移関数をセットします。
      *
      * @param callable $forward エラー画面遷移関数
-     * @return $this
+     * @return self
      */
-    public function setForward($forward)
+    public function setForward(callable $forward): self
     {
-        if (!is_callable($forward)) {
-            throw new \InvalidArgumentException(
-                sprintf('The forward is not callable. type:%s',
-                    (is_object($forward)) ? get_class($forward) : gettype($forward)));
-        }
         $this->forward = $forward;
         return $this;
     }
@@ -357,7 +284,7 @@ class ErrorHandler
      * @param \Exception|\Throwable $exception 例外オブジェクト
      * @return string 例外メッセージ
      */
-    public function formatException($exception)
+    public function formatException($exception): string
     {
         return $this->formatMessage(
             $this->buildExceptionHeader($exception),
@@ -375,13 +302,10 @@ class ErrorHandler
      * @param string $errstr エラーメッセージ
      * @param string $errfile エラー発生元ファイル
      * @param string $errline エラー発生元ファイルの行番号
-     * @param array $errcontext エラー発生元スコープでの全ての変数を格納した配列
      * @return bool|null
      */
-    public function handleError(
-        /** @noinspection PhpUnusedParameterInspection */
-        $errno, $errstr, $errfile, $errline, $errcontext
-    ) {
+    public function handleError(int $errno, string $errstr, string $errfile, string $errline): ?bool
+    {
         if (!(error_reporting() & $errno)) {
             return null;
         }
@@ -408,7 +332,7 @@ class ErrorHandler
      * @param array $trace スタックトレース
      * @return string メッセージ
      */
-    public function formatError($errno, $errstr, $errfile, $errline, $trace)
+    public function formatError(int $errno, string $errstr, string $errfile, string $errline, array $trace): string
     {
         return $this->formatMessage(
             $this->buildErrorHeader($errno),
@@ -423,15 +347,14 @@ class ErrorHandler
      * ログ処理を実行します。
      *
      * @param string $message エラーメッセージ
-     * @param int $error_level エラーレベル定数
+     * @param int|null $error_level エラーレベル定数
      * @param \Exception|\Throwable $exception 例外オブジェクト
      */
-    public function log($message, $error_level = null, $exception = null)
+    public function log(string $message, int $error_level = null, $exception = null)
     {
         if (!isset($error_level) || ($this->getOption('log_level') & $error_level)) {
             if (isset($this->logger)) {
                 call_user_func($this->logger, $message, $exception);
-                return;
             }
         }
     }
@@ -440,10 +363,10 @@ class ErrorHandler
      * エラー表示処理を実行します。
      *
      * @param string $message エラーメッセージ
-     * @param int $error_level エラーレベル定数
+     * @param int|null $error_level エラーレベル定数
      * @param \Exception|\Throwable $exception 例外オブジェクト
      */
-    public function display($message, $error_level = null, $exception = null)
+    public function display(string $message, int $error_level = null, $exception = null)
     {
         if (!isset($error_level) || ($this->getOption('display_level') & $error_level)) {
             if ($this->getOption('display_buffering')) {
@@ -467,10 +390,10 @@ class ErrorHandler
      * エラー画面遷移処理を実行します。
      *
      * @param string $message エラーメッセージ
-     * @param int $error_level エラーレベル定数
+     * @param int|null $error_level エラーレベル定数
      * @param \Exception|\Throwable $exception 例外オブジェクト
      */
-    public function forward($message, $error_level = null, $exception = null)
+    public function forward(string $message, int $error_level = null, $exception = null)
     {
         if (!isset($error_level) || ($this->getOption('forward_level') & $error_level)) {
             if (isset($this->forward)) {
@@ -484,7 +407,7 @@ class ErrorHandler
      *
      * @return array
      */
-    public function getBuffer()
+    public function getBuffer(): array
     {
         return $this->buffer;
     }
@@ -511,9 +434,9 @@ class ErrorHandler
      * @param \Exception|\Throwable $exception 例外オブジェクト
      * @return string
      */
-    public function buildExceptionHeader($exception)
+    public function buildExceptionHeader($exception): string
     {
-        return $this->exceptionFormatter->buildHeader($exception);
+        return ExceptionFormatter::buildHeader($exception);
     }
 
     /**
@@ -522,9 +445,9 @@ class ErrorHandler
      * @param int $errno PHPエラーレベル
      * @return string
      */
-    public function buildErrorHeader($errno)
+    public function buildErrorHeader(int $errno): string
     {
-        return $this->errorFormatter->buildHeader($errno);
+        return ErrorFormatter::buildHeader($errno);
     }
 
     /**
@@ -532,12 +455,12 @@ class ErrorHandler
      *
      * @param string $header エラーヘッダ
      * @param string $message エラーメッセージ
-     * @param string $file エラー発生元ファイルパス
+     * @param string $file エラー発生元ファイル
      * @param string $line エラー発生元ファイルの行番号
      * @param string $trace 整形済みのスタックトレース
      * @return string
      */
-    private function formatMessage($header, $message, $file, $line, $trace)
+    private function formatMessage(string $header, string $message, string $file, string $line, string $trace): string
     {
         $messageFormatter = $this->messageFormatter;
         return $messageFormatter($header, $message, $file, $line, $trace);
@@ -549,7 +472,7 @@ class ErrorHandler
      * @param array $trace スタックトレース
      * @return string
      */
-    private function formatTrace(array $trace)
+    private function formatTrace(array $trace): string
     {
         $formatter = $this->traceFormatter;
         return $formatter($trace);
@@ -559,12 +482,12 @@ class ErrorHandler
      * エラーメッセージを処理します。
      *
      * @param string $message エラーメッセージ
-     * @param int $error_level エラーレベル
+     * @param int|null $error_level エラーレベル
      * @param \Exception|\Throwable $exception 例外オブジェクト
      */
-    private function handle($message, $error_level = null, $exception = null)
+    private function handle(string $message, int $error_level = null, $exception = null)
     {
-        if (isset($exception) && !($exception instanceof \Exception) && !($exception instanceof \Throwable)) {
+        if (isset($exception) && !($exception instanceof \Throwable)) {
             throw new \InvalidArgumentException(
                 sprintf('The Exception is not valid type:%s',
                     (is_object($exception)) ? get_class($exception) : gettype($exception)));
@@ -580,7 +503,7 @@ class ErrorHandler
      * @param string $var 文字列
      * @return string
      */
-    private function escapeHtml($var)
+    private function escapeHtml(string $var): string
     {
         return htmlspecialchars($var, ENT_QUOTES, $this->getOption('output_encoding'));
     }
@@ -591,7 +514,7 @@ class ErrorHandler
      * @param int $errno PHPエラー定数
      * @return int
      */
-    private function convertErrorLevel($errno)
+    private function convertErrorLevel(int $errno): int
     {
         switch ($errno) {
             case E_NOTICE:
@@ -619,7 +542,7 @@ class ErrorHandler
      * @param string $name
      * @return mixed
      */
-    public function __get($name)
+    public function __get(string $name)
     {
         $method = 'get' . ucfirst($name);
         if (method_exists($this, $method)) {
@@ -634,30 +557,30 @@ class ErrorHandler
      *
      * @param string $name
      * @param mixed $value
-     * @return \Volcanus\Error\ErrorHandler
+     * @return void
      */
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $method = 'set' . ucfirst($name);
         if (method_exists($this, $method)) {
             return $this->{$method}($value);
         }
-        return $this->setOption($name, $value);
+        $this->setOption($name, $value);
     }
 
     /**
      * __invoke
      * 引数に応じて例外ハンドラまたはエラーハンドラとして振る舞います。
      *
-     * @param  mixed $error
+     * @param mixed $error
      */
-    public function __invoke($error /*[,$errstr[,$errfile[,$errline[,$errcontext]]]]*/)
+    public function __invoke($error /*[,$errstr[,$errfile[,$errline]]]*/)
     {
-        if ($error instanceof \Exception || $error instanceof \Throwable) {
+        if ($error instanceof \Throwable) {
             $this->handleException($error);
         } else {
             $args = func_get_args();
-            $this->handleError($args[0], $args[1], $args[2], $args[3], $args[4]);
+            $this->handleError($args[0], $args[1], $args[2], $args[3]);
         }
     }
 

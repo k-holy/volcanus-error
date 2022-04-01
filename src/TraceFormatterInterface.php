@@ -22,7 +22,7 @@ interface TraceFormatterInterface
      * @param array $stackTrace スタックトレース
      * @return string
      */
-    public function __invoke(array $stackTrace);
+    public function __invoke(array $stackTrace): string;
 
     /**
      * スタックトレースを文字列に整形して返します。
@@ -30,7 +30,7 @@ interface TraceFormatterInterface
      * @param array $stackTrace スタックトレース
      * @return string
      */
-    public function arrayToString(array $stackTrace);
+    public function arrayToString(array $stackTrace): string;
 
     /**
      * 1レコード分のトレースを文字列に整形して返します。
@@ -38,33 +38,33 @@ interface TraceFormatterInterface
      * @param array $trace 1レコード分のトレース
      * @return string
      */
-    public function format(array $trace);
+    public function format(array $trace): string;
 
     /**
      * トレースのファイル情報を文字列に整形して返します。
      *
-     * @param string $file ファイルパス
-     * @param string $line 行番号
+     * @param string|null $file ファイルパス
+     * @param string|null $line 行番号
      * @return string
      */
-    public function formatLocation($file, $line);
+    public function formatLocation(?string $file, ?string $line): string;
 
     /**
      * トレースの関数呼び出し情報を文字列に整形して返します。
      *
-     * @param string $class クラス名
-     * @param string $type 呼び出し種別
-     * @param string $function 関数名/メソッド名
+     * @param string|null $class クラス名
+     * @param string|null $type 呼び出し種別
+     * @param string|null $function 関数名/メソッド名
      * @return string
      */
-    public function formatFunction($class, $type, $function);
+    public function formatFunction(?string $class, ?string $type, ?string $function): string;
 
     /**
      * トレースの関数呼び出しの引数を文字列に整形して返します。
      *
-     * @param array $arguments 引数の配列
+     * @param array|null $arguments 引数の配列
      * @return string
      */
-    public function formatArguments($arguments);
+    public function formatArguments(?array $arguments): string;
 
 }
