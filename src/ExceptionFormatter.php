@@ -19,10 +19,10 @@ class ExceptionFormatter
     /**
      * 例外オブジェクトを文字列に整形して返します。
      *
-     * @param \Exception|\Throwable $e 例外オブジェクト
+     * @param \Throwable|\Exception $e 例外オブジェクト
      * @return string
      */
-    public function __invoke($e): string
+    public function __invoke(\Throwable|\Exception $e): string
     {
         return self::format($e);
     }
@@ -30,10 +30,10 @@ class ExceptionFormatter
     /**
      * 例外オブジェクトを文字列に整形して返します。
      *
-     * @param \Exception|\Throwable $e 例外オブジェクト
+     * @param \Throwable|\Exception $e 例外オブジェクト
      * @return string
      */
-    public static function format($e): string
+    public static function format(\Throwable|\Exception $e): string
     {
         return sprintf("%s '%s' in %s on line %u",
             self::buildHeader($e),
@@ -46,10 +46,10 @@ class ExceptionFormatter
     /**
      * 例外からエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param \Exception|\Throwable $e 例外オブジェクト
+     * @param \Throwable|\Exception $e 例外オブジェクト
      * @return string
      */
-    public static function buildHeader($e): string
+    public static function buildHeader(\Throwable|\Exception $e): string
     {
         return sprintf("Uncaught Exception %s[%d]:",
             get_class($e),

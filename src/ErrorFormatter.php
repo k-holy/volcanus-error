@@ -17,7 +17,7 @@ class ErrorFormatter
 {
 
     /* @var array PHPエラーレベル */
-    private static $errorLevels = [
+    private static array $errorLevels = [
         E_ERROR => 'Fatal error',
         E_WARNING => 'Warning',
         E_NOTICE => 'Notice',
