@@ -23,12 +23,12 @@ class Trace implements \ArrayAccess
     /**
      * @var TraceFormatterInterface トレースフォーマッタ
      */
-    private $formatter;
+    private TraceFormatterInterface $formatter;
 
     /**
      * @var array トレース情報の連想配列
      */
-    private $trace;
+    private array $trace;
 
     /**
      * コンストラクタ
@@ -123,7 +123,7 @@ class Trace implements \ArrayAccess
      * @param mixed $name
      * @return bool
      */
-    public function __isset($name)
+    public function __isset(mixed $name)
     {
         return method_exists($this, 'format' . ucfirst($name));
     }
@@ -135,7 +135,7 @@ class Trace implements \ArrayAccess
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function __get($name)
+    public function __get(mixed $name)
     {
         if (method_exists($this, 'format' . ucfirst($name))) {
             return $this->{'format' . ucfirst($name)}();
@@ -151,7 +151,7 @@ class Trace implements \ArrayAccess
      * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return $this->__isset($offset);
     }
@@ -163,7 +163,7 @@ class Trace implements \ArrayAccess
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
         return $this->__get($offset);
     }
@@ -193,7 +193,7 @@ class Trace implements \ArrayAccess
      * @param mixed $value
      * @throws \LogicException
      */
-    final public function __set($name, $value)
+    final public function __set(mixed $name, mixed $value)
     {
         throw new \LogicException(
             sprintf('The property "%s" could not set.', $name)
@@ -206,7 +206,7 @@ class Trace implements \ArrayAccess
      * @param mixed $name
      * @throws \LogicException
      */
-    final public function __unset($name)
+    final public function __unset(mixed $name)
     {
         throw new \LogicException(
             sprintf('The property "%s" could not unset.', $name)
@@ -220,7 +220,7 @@ class Trace implements \ArrayAccess
      * @param mixed $value
      * @throws \LogicException
      */
-    final public function offsetSet($offset, $value)
+    final public function offsetSet(mixed $offset, mixed $value): void
     {
         throw new \LogicException(
             sprintf('The property "%s" could not set.', $offset)
@@ -233,7 +233,7 @@ class Trace implements \ArrayAccess
      * @param mixed $offset
      * @throws \LogicException
      */
-    final public function offsetUnset($offset)
+    final public function offsetUnset(mixed $offset): void
     {
         throw new \LogicException(
             sprintf('The property "%s" could not unset.', $offset)

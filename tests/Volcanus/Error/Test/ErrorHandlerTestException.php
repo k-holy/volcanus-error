@@ -17,17 +17,13 @@ class ErrorHandlerTestException extends \RuntimeException
 {
     public function getHttpStatus($code): string
     {
-        switch ($code) {
-            case 400:
-                return '400 Bad Request';
-            case 403:
-                return '403 Forbidden';
-            case 404:
-                return '404 Not Found';
-            case 405:
-                return '405 Method Not Allowed';
-        }
-        return '500 Internal Server Error';
+        return match ($code) {
+            400 => '400 Bad Request',
+            403 => '403 Forbidden',
+            404 => '404 Not Found',
+            405 => '405 Method Not Allowed',
+            default => '500 Internal Server Error',
+        };
     }
 
 }

@@ -20,13 +20,13 @@ class ErrorHandlerTest extends TestCase
 {
 
     /** @var ErrorHandler */
-    private $error;
+    private ErrorHandler $error;
 
     /** @var array */
-    private $log_results;
+    private array $log_results;
 
     /** @var int */
-    private $old_error_reporting;
+    private int $old_error_reporting;
 
     public function setUp(): void
     {

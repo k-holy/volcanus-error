@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpUnused */
+
 /**
  * Volcanus libraries for PHP
  *
@@ -19,17 +20,17 @@ class StackTraceIterator implements \Iterator, \Countable
     /**
      * @var array スタックトレース
      */
-    private $stackTrace;
+    private array $stackTrace;
 
     /**
      * @var TraceFormatterInterface トレースフォーマッタ
      */
-    private $formatter;
+    private TraceFormatterInterface $formatter;
 
     /**
      * @var int 現在のイテレーション位置
      */
-    private $position;
+    private int $position;
 
     /**
      * コンストラクタ
@@ -57,15 +58,15 @@ class StackTraceIterator implements \Iterator, \Countable
     }
 
     /**
-     * Iterator::rewind()
+     * \Iterator::rewind()
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->position = 0;
     }
 
     /**
-     * Iterator::current()
+     * \Iterator::current()
      *
      * @return Trace
      */
@@ -75,23 +76,23 @@ class StackTraceIterator implements \Iterator, \Countable
     }
 
     /**
-     * Iterator::key()
+     * \Iterator::key()
      */
-    public function key()
+    public function key(): int
     {
         return $this->position;
     }
 
     /**
-     * Iterator::next()
+     * \Iterator::next()
      */
-    public function next()
+    public function next(): void
     {
         $this->position++;
     }
 
     /**
-     * Iterator::valid()
+     * \Iterator::valid()
      *
      * @return bool
      */
@@ -101,7 +102,7 @@ class StackTraceIterator implements \Iterator, \Countable
     }
 
     /**
-     * Countable::count()
+     * \Countable::count()
      *
      * @return int
      */

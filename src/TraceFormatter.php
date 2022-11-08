@@ -128,7 +128,7 @@ class TraceFormatter implements TraceFormatterInterface
      * @param mixed $var
      * @return string
      */
-    public function formatVar($var): string
+    public function formatVar(mixed $var): string
     {
         if (is_null($var)) {
             return 'NULL';

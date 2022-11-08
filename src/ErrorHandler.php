@@ -27,7 +27,7 @@ class ErrorHandler
     const LEVEL_ALL = 32767;
 
     /* @var array オプション設定 */
-    private $options = [
+    private array $options = [
 
         // 出力エンコーディング
         'output_encoding' => null,
@@ -51,8 +51,8 @@ class ErrorHandler
     /* @var callable エラーメッセージフォーマット関数 */
     private $messageFormatter;
 
-    /* @var TraceFormatterInterface スタックトレースフォーマット関数 */
-    private $traceFormatter;
+    /* @var \Closure|TraceFormatterInterface スタックトレースフォーマット関数 */
+    private \Closure|TraceFormatterInterface $traceFormatter;
 
     /* @var callable ログ関数 */
     private $logger;
@@ -64,7 +64,7 @@ class ErrorHandler
     private $forward;
 
     /* @var array エラー表示結果のバッファ用配列 */
-    private $buffer = [];
+    private array $buffer = [];
 
     /**
      * コンストラクタ
@@ -135,7 +135,7 @@ class ErrorHandler
      * @param string $name オプション項目名
      * @return mixed オプション項目値
      */
-    public function getOption(string $name)
+    public function getOption(string $name): mixed
     {
         if (!array_key_exists($name, $this->options)) {
             throw new \RuntimeException(
@@ -151,7 +151,7 @@ class ErrorHandler
      * @param mixed $value オプション項目値
      * @return self
      */
-    public function setOption(string $name, $value): self
+    public function setOption(string $name, mixed $value): self
     {
         if (!array_key_exists($name, $this->options)) {
             throw new \RuntimeException(
@@ -247,9 +247,9 @@ class ErrorHandler
     /**
      * 例外ハンドラを返します。
      *
-     * @return callable
+     * @return callable|array
      */
-    public function getExceptionHandler()
+    public function getExceptionHandler(): callable|array
     {
         return [&$this, 'handleException'];
     }
@@ -257,9 +257,9 @@ class ErrorHandler
     /**
      * エラーハンドラを返します。
      *
-     * @return callable
+     * @return callable|array
      */
-    public function getErrorHandler()
+    public function getErrorHandler(): callable|array
     {
         return [&$this, 'handleError'];
     }
@@ -267,9 +267,9 @@ class ErrorHandler
     /**
      * 例外を処理します。
      *
-     * @param \Exception|\Throwable $exception 例外オブジェクト
+     * @param \Throwable|\Exception $exception 例外オブジェクト
      */
-    public function handleException($exception)
+    public function handleException(\Throwable|\Exception $exception): void
     {
         $this->handle(
             $this->formatException($exception),
@@ -281,10 +281,10 @@ class ErrorHandler
     /**
      * 例外を発生元およびスタックトレースが付与されたメッセージに加工して返します。
      *
-     * @param \Exception|\Throwable $exception 例外オブジェクト
+     * @param \Throwable|\Exception $exception 例外オブジェクト
      * @return string 例外メッセージ
      */
-    public function formatException($exception): string
+    public function formatException(\Throwable|\Exception $exception): string
     {
         return $this->formatMessage(
             $this->buildExceptionHeader($exception),
@@ -348,9 +348,9 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル定数
-     * @param \Exception|\Throwable $exception 例外オブジェクト
+     * @param \Throwable|\Exception|null $exception 例外オブジェクト
      */
-    public function log(string $message, int $error_level = null, $exception = null)
+    public function log(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('log_level') & $error_level)) {
             if (isset($this->logger)) {
@@ -364,9 +364,9 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル定数
-     * @param \Exception|\Throwable $exception 例外オブジェクト
+     * @param \Throwable|\Exception|null $exception 例外オブジェクト
      */
-    public function display(string $message, int $error_level = null, $exception = null)
+    public function display(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('display_level') & $error_level)) {
             if ($this->getOption('display_buffering')) {
@@ -391,9 +391,9 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル定数
-     * @param \Exception|\Throwable $exception 例外オブジェクト
+     * @param \Throwable|\Exception|null $exception 例外オブジェクト
      */
-    public function forward(string $message, int $error_level = null, $exception = null)
+    public function forward(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('forward_level') & $error_level)) {
             if (isset($this->forward)) {
@@ -415,7 +415,7 @@ class ErrorHandler
     /**
      * エラー表示結果のバッファをクリアします。
      */
-    public function clearBuffer()
+    public function clearBuffer(): void
     {
         $this->buffer = [];
     }
@@ -423,7 +423,7 @@ class ErrorHandler
     /**
      * エラー表示結果のバッファをフラッシュします。
      */
-    public function flushBuffer()
+    public function flushBuffer(): void
     {
         echo implode("\n", $this->buffer);
     }
@@ -431,10 +431,10 @@ class ErrorHandler
     /**
      * 例外からエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param \Exception|\Throwable $exception 例外オブジェクト
+     * @param \Throwable|\Exception $exception 例外オブジェクト
      * @return string
      */
-    public function buildExceptionHeader($exception): string
+    public function buildExceptionHeader(\Throwable|\Exception $exception): string
     {
         return ExceptionFormatter::buildHeader($exception);
     }
@@ -483,15 +483,10 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル
-     * @param \Exception|\Throwable $exception 例外オブジェクト
+     * @param \Throwable|\Exception|null $exception 例外オブジェクト
      */
-    private function handle(string $message, int $error_level = null, $exception = null)
+    private function handle(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
     {
-        if (isset($exception) && !($exception instanceof \Throwable)) {
-            throw new \InvalidArgumentException(
-                sprintf('The Exception is not valid type:%s',
-                    (is_object($exception)) ? get_class($exception) : gettype($exception)));
-        }
         $this->log($message, $error_level, $exception);
         $this->display($message, $error_level, $exception);
         $this->forward($message, $error_level, $exception);
@@ -516,23 +511,13 @@ class ErrorHandler
      */
     private function convertErrorLevel(int $errno): int
     {
-        switch ($errno) {
-            case E_NOTICE:
-            case E_USER_NOTICE:
-                return self::LEVEL_NOTICE;
-            case E_WARNING:
-            case E_USER_WARNING:
-                return self::LEVEL_WARNING;
-            case E_ERROR:
-            case E_USER_ERROR:
-            case E_RECOVERABLE_ERROR:
-                return self::LEVEL_ERROR;
-            case E_STRICT:
-            case E_DEPRECATED:
-            case E_USER_DEPRECATED:
-                return self::LEVEL_INFO;
-        }
-        return self::LEVEL_UNKNOWN;
+        return match ($errno) {
+            E_NOTICE, E_USER_NOTICE => self::LEVEL_NOTICE,
+            E_WARNING, E_USER_WARNING => self::LEVEL_WARNING,
+            E_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR => self::LEVEL_ERROR,
+            E_STRICT, E_DEPRECATED, E_USER_DEPRECATED => self::LEVEL_INFO,
+            default => self::LEVEL_UNKNOWN,
+        };
     }
 
     /**
@@ -559,7 +544,7 @@ class ErrorHandler
      * @param mixed $value
      * @return void
      */
-    public function __set(string $name, $value)
+    public function __set(string $name, mixed $value)
     {
         $method = 'set' . ucfirst($name);
         if (method_exists($this, $method)) {
@@ -574,7 +559,7 @@ class ErrorHandler
      *
      * @param mixed $error
      */
-    public function __invoke($error /*[,$errstr[,$errfile[,$errline]]]*/)
+    public function __invoke(mixed $error /*[,$errstr[,$errfile[,$errline]]]*/): void
     {
         if ($error instanceof \Throwable) {
             $this->handleException($error);
