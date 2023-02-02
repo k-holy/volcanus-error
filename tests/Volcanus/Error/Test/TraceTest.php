@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -258,7 +258,6 @@ class TraceTest extends TestCase
         $trace = new Trace($formatter, $source);
 
         /** @noinspection PhpUndefinedFieldInspection */
-        /** @noinspection PhpExpressionResultUnusedInspection */
         $trace->unsupportedProperty;
     }
 

@@ -1,7 +1,7 @@
 <?php /** @noinspection PhpUnused */
 
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -116,7 +116,7 @@ class StackTraceIterator implements \Iterator, \Countable
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $stackTrace = [];
         foreach ($this->stackTrace as $index => $trace) {
