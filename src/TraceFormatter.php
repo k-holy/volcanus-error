@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -106,8 +106,8 @@ class TraceFormatter implements TraceFormatterInterface
         if (empty($arguments)) {
             return '';
         }
-        $self = $this;
-        return implode(', ', array_map(function ($arg) use ($self) {
+        return implode(', ', array_map(function ($arg) {
+            $self = $this;
             if (is_array($arg)) {
                 $vars = [];
                 foreach ($arg as $key => $var) {

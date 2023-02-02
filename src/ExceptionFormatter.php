@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -19,10 +19,10 @@ class ExceptionFormatter
     /**
      * 例外オブジェクトを文字列に整形して返します。
      *
-     * @param \Throwable|\Exception $e 例外オブジェクト
+     * @param \Throwable $e 例外オブジェクト
      * @return string
      */
-    public function __invoke(\Throwable|\Exception $e): string
+    public function __invoke(\Throwable $e): string
     {
         return self::format($e);
     }
@@ -30,10 +30,10 @@ class ExceptionFormatter
     /**
      * 例外オブジェクトを文字列に整形して返します。
      *
-     * @param \Throwable|\Exception $e 例外オブジェクト
+     * @param \Throwable $e 例外オブジェクト
      * @return string
      */
-    public static function format(\Throwable|\Exception $e): string
+    public static function format(\Throwable $e): string
     {
         return sprintf("%s '%s' in %s on line %u",
             self::buildHeader($e),
@@ -46,10 +46,10 @@ class ExceptionFormatter
     /**
      * 例外からエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param \Throwable|\Exception $e 例外オブジェクト
+     * @param \Throwable $e 例外オブジェクト
      * @return string
      */
-    public static function buildHeader(\Throwable|\Exception $e): string
+    public static function buildHeader(\Throwable $e): string
     {
         return sprintf("Uncaught Exception %s[%d]:",
             get_class($e),

@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -51,16 +51,16 @@ class ErrorHandler
     /* @var callable エラーメッセージフォーマット関数 */
     private $messageFormatter;
 
-    /* @var \Closure|TraceFormatterInterface スタックトレースフォーマット関数 */
-    private \Closure|TraceFormatterInterface $traceFormatter;
+    /* @var callable スタックトレースフォーマット関数 */
+    private $traceFormatter;
 
-    /* @var callable ログ関数 */
+    /* @var callable|null ログ関数 */
     private $logger;
 
-    /* @var callable エラー表示関数 */
+    /* @var callable|null エラー表示関数 */
     private $display;
 
-    /* @var callable エラー画面遷移関数 */
+    /* @var callable|null エラー画面遷移関数 */
     private $forward;
 
     /* @var array エラー表示結果のバッファ用配列 */
@@ -247,29 +247,29 @@ class ErrorHandler
     /**
      * 例外ハンドラを返します。
      *
-     * @return callable|array
+     * @return callable
      */
-    public function getExceptionHandler(): callable|array
+    public function getExceptionHandler(): callable
     {
-        return [&$this, 'handleException'];
+        return $this->handleException(...);
     }
 
     /**
      * エラーハンドラを返します。
      *
-     * @return callable|array
+     * @return callable
      */
-    public function getErrorHandler(): callable|array
+    public function getErrorHandler(): callable
     {
-        return [&$this, 'handleError'];
+        return $this->handleError(...);
     }
 
     /**
      * 例外を処理します。
      *
-     * @param \Throwable|\Exception $exception 例外オブジェクト
+     * @param \Throwable $exception 例外オブジェクト
      */
-    public function handleException(\Throwable|\Exception $exception): void
+    public function handleException(\Throwable $exception): void
     {
         $this->handle(
             $this->formatException($exception),
@@ -281,10 +281,10 @@ class ErrorHandler
     /**
      * 例外を発生元およびスタックトレースが付与されたメッセージに加工して返します。
      *
-     * @param \Throwable|\Exception $exception 例外オブジェクト
+     * @param \Throwable $exception 例外オブジェクト
      * @return string 例外メッセージ
      */
-    public function formatException(\Throwable|\Exception $exception): string
+    public function formatException(\Throwable $exception): string
     {
         return $this->formatMessage(
             $this->buildExceptionHeader($exception),
@@ -348,9 +348,9 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル定数
-     * @param \Throwable|\Exception|null $exception 例外オブジェクト
+     * @param \Throwable|null $exception 例外オブジェクト
      */
-    public function log(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
+    public function log(string $message, int $error_level = null, \Throwable $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('log_level') & $error_level)) {
             if (isset($this->logger)) {
@@ -364,9 +364,9 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル定数
-     * @param \Throwable|\Exception|null $exception 例外オブジェクト
+     * @param \Throwable|null $exception 例外オブジェクト
      */
-    public function display(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
+    public function display(string $message, int $error_level = null, \Throwable $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('display_level') & $error_level)) {
             if ($this->getOption('display_buffering')) {
@@ -391,9 +391,9 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル定数
-     * @param \Throwable|\Exception|null $exception 例外オブジェクト
+     * @param \Throwable|null $exception 例外オブジェクト
      */
-    public function forward(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
+    public function forward(string $message, int $error_level = null, \Throwable $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('forward_level') & $error_level)) {
             if (isset($this->forward)) {
@@ -431,10 +431,10 @@ class ErrorHandler
     /**
      * 例外からエラーメッセージ用のヘッダを生成して返します。
      *
-     * @param \Throwable|\Exception $exception 例外オブジェクト
+     * @param \Throwable $exception 例外オブジェクト
      * @return string
      */
-    public function buildExceptionHeader(\Throwable|\Exception $exception): string
+    public function buildExceptionHeader(\Throwable $exception): string
     {
         return ExceptionFormatter::buildHeader($exception);
     }
@@ -483,9 +483,9 @@ class ErrorHandler
      *
      * @param string $message エラーメッセージ
      * @param int|null $error_level エラーレベル
-     * @param \Throwable|\Exception|null $exception 例外オブジェクト
+     * @param \Throwable|null $exception 例外オブジェクト
      */
-    private function handle(string $message, int $error_level = null, \Throwable|\Exception $exception = null): void
+    private function handle(string $message, int $error_level = null, \Throwable $exception = null): void
     {
         $this->log($message, $error_level, $exception);
         $this->display($message, $error_level, $exception);
