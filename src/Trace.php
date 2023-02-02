@@ -1,6 +1,6 @@
 <?php
 /**
- * Volcanus libraries for PHP
+ * Volcanus libraries for PHP 8.1~
  *
  * @copyright k-holy <k.holy74@gmail.com>
  * @license The MIT License (MIT)
@@ -11,9 +11,9 @@ namespace Volcanus\Error;
 /**
  * トレース
  *
- * @property $location
- * @property $function
- * @property $argument
+ * @property string $location
+ * @property string $function
+ * @property string $argument
  *
  * @author k.holy74@gmail.com
  */
@@ -28,7 +28,7 @@ class Trace implements \ArrayAccess
     /**
      * @var array トレース情報の連想配列
      */
-    private array $trace;
+    private array $trace = [];
 
     /**
      * コンストラクタ
@@ -50,7 +50,7 @@ class Trace implements \ArrayAccess
      */
     public function initialize(array $trace = null): self
     {
-        $this->trace = ($trace !== null) ? $trace : [];
+        $this->trace = $trace ?? [];
         return $this;
     }
 
@@ -112,7 +112,7 @@ class Trace implements \ArrayAccess
      *
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->formatter->format($this->trace);
     }
@@ -120,10 +120,10 @@ class Trace implements \ArrayAccess
     /**
      * __isset
      *
-     * @param mixed $name
+     * @param string $name
      * @return bool
      */
-    public function __isset(mixed $name)
+    public function __isset(string $name)
     {
         return method_exists($this, 'format' . ucfirst($name));
     }
@@ -131,11 +131,11 @@ class Trace implements \ArrayAccess
     /**
      * __get
      *
-     * @param mixed $name
+     * @param string $name
      * @return mixed
      * @throws \InvalidArgumentException
      */
-    public function __get(mixed $name)
+    public function __get(string $name): mixed
     {
         if (method_exists($this, 'format' . ucfirst($name))) {
             return $this->{'format' . ucfirst($name)}();
@@ -146,7 +146,7 @@ class Trace implements \ArrayAccess
     }
 
     /**
-     * ArrayAccess::offsetExists()
+     * \ArrayAccess::offsetExists()
      *
      * @param mixed $offset
      * @return bool
@@ -157,7 +157,7 @@ class Trace implements \ArrayAccess
     }
 
     /**
-     * ArrayAccess::offsetGet()
+     * \ArrayAccess::offsetGet()
      *
      * @param mixed $offset
      * @return mixed
@@ -170,8 +170,10 @@ class Trace implements \ArrayAccess
 
     /**
      * __clone for clone
+     *
+     * @return void
      */
-    public function __clone()
+    public function __clone(): void
     {
         $this->formatter = clone $this->formatter;
     }
@@ -181,7 +183,7 @@ class Trace implements \ArrayAccess
      *
      * @return array
      */
-    public function __sleep()
+    public function __sleep(): array
     {
         return array_keys(get_object_vars($this));
     }
@@ -189,11 +191,12 @@ class Trace implements \ArrayAccess
     /**
      * __set
      *
-     * @param mixed $name
+     * @param string $name
      * @param mixed $value
+     * @return void
      * @throws \LogicException
      */
-    final public function __set(mixed $name, mixed $value)
+    final public function __set(string $name, mixed $value): void
     {
         throw new \LogicException(
             sprintf('The property "%s" could not set.', $name)
@@ -204,9 +207,10 @@ class Trace implements \ArrayAccess
      * __unset
      *
      * @param mixed $name
+     * @return void
      * @throws \LogicException
      */
-    final public function __unset(mixed $name)
+    final public function __unset(string $name): void
     {
         throw new \LogicException(
             sprintf('The property "%s" could not unset.', $name)
@@ -214,7 +218,7 @@ class Trace implements \ArrayAccess
     }
 
     /**
-     * ArrayAccess::offsetSet()
+     * \ArrayAccess::offsetSet()
      *
      * @param mixed $offset
      * @param mixed $value
@@ -228,7 +232,7 @@ class Trace implements \ArrayAccess
     }
 
     /**
-     * ArrayAccess::offsetUnset()
+     * \ArrayAccess::offsetUnset()
      *
      * @param mixed $offset
      * @throws \LogicException
