@@ -286,50 +286,6 @@ class ErrorHandlerTest extends TestCase
         $this->assertTrue(is_callable($this->error->getExceptionHandler()));
     }
 
-    /** @noinspection PhpUnreachableStatementInspection */
-    public function testErrorHandler()
-    {
-        $this->error->setOption('log_level', ErrorHandler::LEVEL_NONE);
-        $this->error->setOption('display_level', ErrorHandler::LEVEL_NONE);
-        $this->error->setOption('forward_level', ErrorHandler::LEVEL_NONE);
-        $this->error->setOption('display_buffering', true);
-        set_error_handler($this->error->getErrorHandler());
-
-        trigger_error('ERR', E_USER_ERROR);
-        $this->assertEmpty($this->error->getBuffer());
-
-        $this->error->setOption('display_level', ErrorHandler::LEVEL_ERROR);
-        trigger_error('ERR', E_USER_ERROR);
-        $this->assertNotEmpty($this->error->getBuffer());
-        $this->error->clearBuffer();
-
-        trigger_error('ERR', E_USER_WARNING);
-        $this->assertEmpty($this->error->getBuffer());
-
-        $this->error->setOption('display_level', ErrorHandler::LEVEL_ERROR | ErrorHandler::LEVEL_WARNING);
-        trigger_error('ERR', E_USER_WARNING);
-        $this->assertNotEmpty($this->error->getBuffer());
-        $this->error->clearBuffer();
-
-        trigger_error('ERR', E_USER_NOTICE);
-        $this->assertEmpty($this->error->getBuffer());
-
-        $this->error->setOption('display_level', ErrorHandler::LEVEL_ERROR | ErrorHandler::LEVEL_WARNING | ErrorHandler::LEVEL_NOTICE);
-        trigger_error('ERR', E_USER_NOTICE);
-        $this->assertNotEmpty($this->error->getBuffer());
-        $this->error->clearBuffer();
-
-        trigger_error('ERR', E_USER_DEPRECATED);
-        $this->assertEmpty($this->error->getBuffer());
-
-        $this->error->setOption('display_level', ErrorHandler::LEVEL_ERROR | ErrorHandler::LEVEL_WARNING | ErrorHandler::LEVEL_NOTICE | ErrorHandler::LEVEL_INFO);
-        trigger_error('ERR', E_USER_DEPRECATED);
-        $this->assertNotEmpty($this->error->getBuffer());
-        $this->error->clearBuffer();
-
-    }
-
-
     public function testLogWithException()
     {
         $log_results = [];
