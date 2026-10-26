@@ -48,7 +48,7 @@ class Trace implements \ArrayAccess
      * @param array|null $trace トレース情報の連想配列
      * @return self
      */
-    public function initialize(array $trace = null): self
+    public function initialize(?array $trace = null): self
     {
         $this->trace = $trace ?? [];
         return $this;
