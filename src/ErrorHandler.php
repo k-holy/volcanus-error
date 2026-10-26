@@ -17,14 +17,14 @@ class ErrorHandler
 {
 
     /* @const int エラーレベル定数 */
-    const LEVEL_NONE = 0;
-    const LEVEL_EXCEPTION = 1;
-    const LEVEL_ERROR = 2;
-    const LEVEL_WARNING = 4;
-    const LEVEL_NOTICE = 8;
-    const LEVEL_INFO = 16;
-    const LEVEL_UNKNOWN = 32;
-    const LEVEL_ALL = 32767;
+    const int LEVEL_NONE = 0;
+    const int LEVEL_EXCEPTION = 1;
+    const int LEVEL_ERROR = 2;
+    const int LEVEL_WARNING = 4;
+    const int LEVEL_NOTICE = 8;
+    const int LEVEL_INFO = 16;
+    const int LEVEL_UNKNOWN = 32;
+    const int LEVEL_ALL = 32767;
 
     /* @var array オプション設定 */
     private array $options = [
@@ -350,7 +350,7 @@ class ErrorHandler
      * @param int|null $error_level エラーレベル定数
      * @param \Throwable|null $exception 例外オブジェクト
      */
-    public function log(string $message, int $error_level = null, \Throwable $exception = null): void
+    public function log(string $message, ?int $error_level = null, ?\Throwable $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('log_level') & $error_level)) {
             if (isset($this->logger)) {
@@ -366,7 +366,7 @@ class ErrorHandler
      * @param int|null $error_level エラーレベル定数
      * @param \Throwable|null $exception 例外オブジェクト
      */
-    public function display(string $message, int $error_level = null, \Throwable $exception = null): void
+    public function display(string $message, ?int $error_level = null, ?\Throwable $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('display_level') & $error_level)) {
             if ($this->getOption('display_buffering')) {
@@ -393,7 +393,7 @@ class ErrorHandler
      * @param int|null $error_level エラーレベル定数
      * @param \Throwable|null $exception 例外オブジェクト
      */
-    public function forward(string $message, int $error_level = null, \Throwable $exception = null): void
+    public function forward(string $message, ?int $error_level = null, ?\Throwable $exception = null): void
     {
         if (!isset($error_level) || ($this->getOption('forward_level') & $error_level)) {
             if (isset($this->forward)) {
@@ -485,7 +485,7 @@ class ErrorHandler
      * @param int|null $error_level エラーレベル
      * @param \Throwable|null $exception 例外オブジェクト
      */
-    private function handle(string $message, int $error_level = null, \Throwable $exception = null): void
+    private function handle(string $message, ?int $error_level = null, ?\Throwable $exception = null): void
     {
         $this->log($message, $error_level, $exception);
         $this->display($message, $error_level, $exception);
@@ -515,7 +515,7 @@ class ErrorHandler
             E_NOTICE, E_USER_NOTICE => self::LEVEL_NOTICE,
             E_WARNING, E_USER_WARNING => self::LEVEL_WARNING,
             E_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR => self::LEVEL_ERROR,
-            E_STRICT, E_DEPRECATED, E_USER_DEPRECATED => self::LEVEL_INFO,
+            E_DEPRECATED, E_USER_DEPRECATED => self::LEVEL_INFO,
             default => self::LEVEL_UNKNOWN,
         };
     }

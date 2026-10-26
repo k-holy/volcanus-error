@@ -21,7 +21,6 @@ class ErrorFormatter
         E_ERROR => 'Fatal error',
         E_WARNING => 'Warning',
         E_NOTICE => 'Notice',
-        E_STRICT => 'Strict standards',
         E_RECOVERABLE_ERROR => 'Catchable fatal error',
         E_DEPRECATED => 'Deprecated',
         E_USER_ERROR => 'User Fatal error',
